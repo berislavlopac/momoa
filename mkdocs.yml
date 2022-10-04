@@ -1,5 +1,5 @@
 site_name: Momoa
-repo_url:
+repo_url: https://github.com/berislavlopac/momoa
 site_description: A library for definition, validation and serialisation of models based on JSONSchema specifications.
 site_author: Berislav Lopac <berislav@lopac.net>
 use_directory_urls: false
@@ -10,11 +10,6 @@ extra_css:
 plugins:
   - search
   - mkapi
-markdown_extensions:
-  - toc:
-      permalink: yes
-  - codehilite:
-      guess_lang: no
 nav:
   - index.md
   - reference.md
