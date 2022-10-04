@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "title": "Get Example Input Schema",
+  "properties": {
+    "something": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "something"
+  ]
+}

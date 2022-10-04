@@ -1,0 +1,17 @@
+div.autodoc-signature {
+  font-size: large;
+  margin-bottom: 5px;
+}
+
+div.autodoc-signature code {
+  font-size: large;
+}
+
+div.autodoc-docstring {
+  padding-left: 5px;
+}
+
+div.autodoc-members {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}

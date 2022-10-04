@@ -1,0 +1,16 @@
+{
+  "firstName": "Boris",
+  "lastName": "Harrison",
+  "age": 53,
+  "dogs": [
+    "Fluffy",
+    "Crumpet"
+  ],
+  "gender": "male",
+  "deceased": false,
+  "address": {
+    "street": "adipisicing do proident laborum",
+    "city": "veniam nulla ipsum adipisicing eu",
+    "state": "Excepteur esse elit"
+  }
+}

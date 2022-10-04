@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "title": "Get Example Output Schema",
+  "properties": {
+    "something_else": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "something_else"
+  ]
+}
