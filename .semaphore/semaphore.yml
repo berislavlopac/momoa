@@ -1,0 +1,70 @@
+version: v1.0
+name: Python checks and tests
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+global_job_config:
+  prologue:
+    commands:
+      - checkout
+blocks:
+  - name: Code checks
+    dependencies: []
+    task:
+      prologue:
+        commands:
+          - sem-version python 3.8
+          - python -m pip install -U pip poetry tox tox-poetry
+      jobs:
+        - name: checks
+          commands:
+            - python -m tox -e checks
+  - name: Unit tests
+    dependencies:
+      - Code checks
+    task:
+      prologue:
+        commands:
+          - sem-version python $PY_VERSION
+          - python -m pip install -U pip poetry tox tox-poetry
+      jobs:
+        - name: tests
+          matrix:
+            - env_var: PY_VERSION
+              values:
+                - '3.8'
+                - '3.9'
+                - '3.10'
+          commands:
+            - 'PY_ENV=py"${PY_VERSION//.}"'
+            - python -m tox -e $PY_ENV
+      epilogue:
+        on_pass:
+          commands:
+            - 'test-results publish "test-reports/$PY_ENV-junit.xml"'
+  - name: Publish release
+    dependencies: ["Unit tests"]
+    run:
+      when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
+    task:
+      secrets:
+        - name: pypi-credentials
+      prologue:
+        commands:
+          - sem-version python 3.8
+          - python -m pip install -U pip poetry
+      jobs:
+        - name: Build and upload Python package
+          commands:
+            - poetry build -f wheel
+            - poetry publish -u b11c -p $PYPI_PASSWORD
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Test Results
+        commands:
+          - test-results gen-pipeline-report
+promotions:
+  - name: Create new release
+    pipeline_file: create-release.yml
