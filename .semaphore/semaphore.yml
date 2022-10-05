@@ -10,6 +10,8 @@ global_job_config:
       - checkout
 blocks:
   - name: Code checks
+    skip:
+      when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
     dependencies: []
     task:
       prologue:
@@ -21,6 +23,8 @@ blocks:
           commands:
             - python -m tox -e checks
   - name: Unit tests
+    skip:
+      when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
     dependencies:
       - Code checks
     task:
@@ -44,7 +48,7 @@ blocks:
           commands:
             - 'test-results publish "test-reports/$PY_ENV-junit.xml"'
   - name: Publish release
-    dependencies: ["Unit tests"]
+    dependencies: []
     run:
       when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
     task:
