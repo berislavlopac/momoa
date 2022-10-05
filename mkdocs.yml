@@ -1,15 +1,18 @@
 site_name: Momoa
 repo_url: https://github.com/berislavlopac/momoa
+site_url: https://momoa.readthedocs.io
 site_description: A library for definition, validation and serialisation of models based on JSONSchema specifications.
 site_author: Berislav Lopac <berislav@lopac.net>
 use_directory_urls: false
 theme:
-  name: readthedocs
-extra_css:
-  - css/custom.css
-plugins:
-  - search
-  - mkapi
+  name: material
+  icon:
+    logo: material/code-json
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 nav:
   - index.md
-  - reference.md

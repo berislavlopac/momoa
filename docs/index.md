@@ -1,6 +1,8 @@
-# Overview
+# Momoa
 
 `momoa` is a library for definition, validation and serialisation of models based on JSONSchema specifications.
+
+[![Documentation Status](https://readthedocs.org/projects/momoa/badge/?version=latest)](https://momoa.readthedocs.io/en/latest/?badge=latest)
 
 ## Schema Object
 
@@ -100,7 +102,7 @@ assert result == {
 }
 ```
 
-Conversely, data can be deserialised from a JSON string or Python dict into a Model instance:
+Conversely, data can be deserialised from a JSON-formatted string or a Python dict into a Model instance:
 
 ```python
 from momoa import Schema
