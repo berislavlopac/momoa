@@ -26,7 +26,7 @@ class StringFormat:
     """
     Helper utility for converting values of string fields with format.
 
-    JSONSchema `string` type supports the `format` keyword, which can be used to
+    JSON Schema `string` type supports the `format` keyword, which can be used to
     convert its value to and from a native Python type. This class supports custom
     implementation of that conversion.
     """
@@ -43,7 +43,7 @@ class StringFormat:
 
     def to_(self, value: Any) -> str:
         """
-        Converts Python native types to formatted JSONSchema strings.
+        Converts a value of a Python native type to a formatted JSON string.
 
         Attributes:
             value: Any Python type, to be converted if supported.
@@ -55,7 +55,7 @@ class StringFormat:
 
     def from_(self, value: str) -> Any:
         """
-        Converts JSONSchema-formatted strings to native Python types.
+        Converts a formatted JSON string to a native Python type.
 
         Attributes:
             value: A formatted string, to be converted if supported.

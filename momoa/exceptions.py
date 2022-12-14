@@ -1,12 +1,12 @@
-"""Exceptions for working with JSONSchema specifications."""
+"""Exceptions for working with JSON Schema specifications."""
 
 
 class SchemaError(Exception):
-    """Generic JSONSchema error."""
+    """Generic JSON Schema error."""
 
 
 class SchemaParseError(SchemaError):
-    """Error while parsing JSONSchema."""
+    """Error while parsing JSON Schema."""
 
 
 class DataValidationError(SchemaError):
