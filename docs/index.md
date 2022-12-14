@@ -1,6 +1,6 @@
 # Momoa
 
-`momoa` is a library for definition, validation and serialisation of models based on JSONSchema specifications.
+**Momoa** is a library for definition, validation and serialisation of Python data objects based on JSON Schema specifications.
 
 [![Documentation Status](https://readthedocs.org/projects/momoa/badge/?version=latest)](https://momoa.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://b11c.semaphoreci.com/badges/momoa/branches/main.svg?style=shields&key=3e80692d-ad00-401e-b445-75303b8f35d0)](https://b11c.semaphoreci.com/projects/momoa)
@@ -39,7 +39,7 @@ schema_dict = yaml.safe_load(schema_file.read_text())
 schema = Schema(schema_dict)
 ```
 
-### Models
+## Model Instance
 
 An instantiated Schema will contain a tuple of model classes based on the schemas in the specification document. The main model will also be available separately.
 
@@ -50,7 +50,7 @@ An instantiated Schema will contain a tuple of model classes based on the schema
     >>> schema.model
     <class 'momoa.model.PersonModel'>
 
-The model classes are constructed dynamically when the Schema is instantiated. An instance of a model subclass is a Python object which automatically validates values and converts them to JSONSchema compliant types internally.
+The model classes are constructed dynamically when the Schema is instantiated. An instance of a model subclass is a Python object which automatically validates values and converts them to JSON Schema compliant types internally.
 
 ```python
 from datetime import datetime
@@ -73,7 +73,7 @@ assert person.age == 53
 assert person.birthday == datetime(1969, 11, 23)
 ```
 
-## Serialization and Deserialization
+### Serialization and Deserialization
 
 Model instances can be serialised into JSON-compatible Python dicts:
 

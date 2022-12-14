@@ -34,6 +34,7 @@ tox-poetry = ">=0.4.1"
 [tool.poetry.group.docs.dependencies]
 mkdocs = ">=1.3.0"
 mkdocs-material = ">=8.5.6"
+mkapi = "^1.0.14"
 
 [tool.black]
 line-length = 100
