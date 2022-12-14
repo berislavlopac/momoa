@@ -59,7 +59,8 @@ class Model:
 
     def __iter__(self):
         return (
-            (field_name, getattr(self, field_name)) for field_name in self._schema_class.properties
+            (field_name, getattr(self, field_name))
+            for field_name in self._schema_class.properties
         )
 
     def __eq__(self, other) -> bool:
@@ -71,8 +72,8 @@ class Model:
     def _get_field_element(cls, field):
         try:
             return cls._schema_class.properties[field].element
-        except KeyError:
-            raise DataValidationError(f"Invalid field '{field}'")
+        except KeyError as ex:
+            raise DataValidationError(f"Invalid field '{field}'") from ex
 
     def serialize(self):
         """Validates data and serializes it into JSON-ready format."""
@@ -99,7 +100,7 @@ def _serialize_schema_value(value: Any) -> Any:
     if isinstance(value, list):
         return [_serialize_schema_value(item) for item in value]
     if isinstance(type(value), meta.ObjectMeta):
-        value = value._dict
+        value = value._dict  # pylint: disable=protected-access
     if isinstance(value, dict):
         return {
             field_name: _serialize_schema_value(field_value)

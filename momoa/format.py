@@ -38,8 +38,8 @@ class StringFormat:
         "ipv6": ip_address,
     }
 
-    def __init__(self, format):
-        self.format = format
+    def __init__(self, fmt):
+        self.format = fmt
 
     def to_(self, value: Any) -> str:
         """

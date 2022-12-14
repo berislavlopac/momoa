@@ -31,9 +31,11 @@ class Schema:
         try:
             parsed = parse(deepcopy(self.schema_dict))
         except KeyError as ex:
-            raise SchemaParseError(f"Error parsing schema `{self.title}`: {ex}")
+            raise SchemaParseError(f"Error parsing schema `{self.title}`: {ex}") from ex
         else:
-            self.models: Sequence[Type[Model]] = tuple(make_model(cls) for cls in orderer(*parsed))
+            self.models: Sequence[Type[Model]] = tuple(
+                make_model(cls) for cls in orderer(*parsed)
+            )
 
     @classmethod
     def from_uri(cls, input_uri: str) -> Schema:
