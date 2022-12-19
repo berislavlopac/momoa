@@ -39,7 +39,7 @@ jinja2 = "<3.1.0"
 
 [tool.black]
 line-length = 96
-target-version = ['py38', 'py39']
+target-version = ['py38', 'py39', 'py310', 'py311']
 verbose = false
 skip-string-normalization = false
 
