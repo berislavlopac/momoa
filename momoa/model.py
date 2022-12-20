@@ -25,8 +25,7 @@ class Model:
                 {key: self._format(key, value) for key, value in data.items()}
             )
         except ValidationError as ex:
-            error_message = f"{type(self).__name__} validation error: {ex}"
-            raise DataValidationError(error_message) from ex
+            raise DataValidationError(f"{type(self).__name__} validation error: {ex}") from ex
 
     def _format(self, field: str, value: Any) -> str:
         """Converts Python native values to JSONSchema string equivalents on the fly."""
@@ -68,10 +67,9 @@ class Model:
             getattr(other, field) == value for field, value in self
         )
 
-    @classmethod
-    def _get_field_element(cls, field):
+    def _get_field_element(self, field):
         try:
-            return cls._schema_class.properties[field].element
+            return self._schema_class.properties[field].element
         except KeyError as ex:
             raise DataValidationError(f"Invalid field '{field}'") from ex
 
@@ -100,7 +98,7 @@ def _serialize_schema_value(value: Any) -> Any:
     if isinstance(value, list):
         return [_serialize_schema_value(item) for item in value]
     if isinstance(type(value), meta.ObjectMeta):
-        value = value._dict  # pylint: disable=protected-access
+        value = value._dict
     if isinstance(value, dict):
         return {
             field_name: _serialize_schema_value(field_value)

@@ -19,6 +19,7 @@ def test_valid_schema_loads_from_dict(schema_dict, caplog):
         assert model.__name__ in ("AddressModel", "ShoePreferencesModel", "PersonModel")
         assert isclass(model)
         assert issubclass(model, Model)
+        assert loaded_schema.title == "Person"
 
 
 def test_invalid_schema_fails_loading(schema_dict):
