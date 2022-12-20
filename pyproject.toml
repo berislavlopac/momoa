@@ -29,7 +29,7 @@ toml = ">=0.10.2"
 mutmut = ">=2.4.0"
 tox = "<4.0"
 tox-poetry = ">=0.4.1"
-pylint = ">=2.15.8"
+ruff = "^0.0.188"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = ">=1.3.0"
@@ -68,9 +68,10 @@ add-ignore = "D105, D107, D212, D401"
 convention = "google"
 match-dir = "(?!tests).*"
 
-[tool.pylint.checker]
-disable = "fixme, "
-max-line-length = 96
+[tool.ruff]
+line-length = 96
+target-version = "py38"
+format = "grouped"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
