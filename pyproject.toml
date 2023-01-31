@@ -1,41 +1,52 @@
-[tool.poetry]
+[project]
 name = "momoa"
 version = "0.1.2"
 description = "A library for definition, validation and serialisation of Python objects based on JSONSchema specifications."
-authors = ["Berislav Lopac <berislav@lopac.net>"]
-license = "MIT"
 readme = "README.md"
-homepage = "https://momoa.readthedocs.io"
-repository = "https://github.com/berislavlopac/momoa"
-packages = [
-    { include = "momoa/" },
+license = {text = "MIT"}
+authors = [
+    {name = "Berislav Lopac", email = "berislav@lopac.net"},
+]
+requires-python = ">=3.8,<4.0"
+dependencies = [
+    "statham-schema<1.0.0,>=0.13.5",
+    "stringcase<2.0.0,>=1.2.0",
+    "python-dateutil<3.0.0,>=2.8.2",
+    "statham-schema<1.0.0,>=0.13.5",
+    "stringcase<2.0.0,>=1.2.0",
+    "python-dateutil<3.0.0,>=2.8.2",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-statham-schema = "^0.13.5"
-stringcase = "^1.2.0"
-python-dateutil = "^2.8.2"
+[tool.pdm.build]
+includes = ["momoa/"]
 
-[tool.poetry.group.dev.dependencies]
-pytest = ">=7.1.2"
-pytest-cov = ">=3.0.0"
-black = ">=22.1.0"
-isort = ">=5.10.1"
-mypy = ">=0.931"
-pytest-spec = ">=3.2.0"
-pydocstyle = ">=6.1.1"
-toml = ">=0.10.2"
-mutmut = ">=2.4.0"
-tox = "<4.0"
-tox-poetry = ">=0.4.1"
-ruff = ">=0.0.188"
+[tool.pdm.dev-dependencies]
+docs = [
+    "mkdocs>=1.4.2",
+    "mkdocs-material>=9.0.9",
+    "mkapi>=1.0.14",
+    "jinja2>=3.1.2",
+]
+test = [
+    "pytest>=7.2.1",
+    "pytest-cov>=4.0.0",
+    "pytest-spec>=3.2.0",
+    "mypy>=0.991",
+    "mutmut>=2.4.3",
+    "tox>=3.28.0",
+    "tox-pdm>=0.6.1",
+]
+checks = [
+    "black>=22.12.0",
+    "isort>=5.12.0",
+    "pydocstyle>=6.3.0",
+    "toml>=0.10.2",
+    "ruff>=0.0.238",
+]
 
-[tool.poetry.group.docs.dependencies]
-mkdocs = ">=1.3.0"
-mkdocs-material = ">=8.5.6"
-mkapi = "^1.0.14"
-jinja2 = "<3.1.0"
+[project.urls]
+homepage = "https://momoa.readthedocs.io"
+repository = "https://github.com/berislavlopac/momoa"
 
 [tool.black]
 line-length = 96
@@ -74,5 +85,5 @@ target-version = "py38"
 format = "grouped"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"

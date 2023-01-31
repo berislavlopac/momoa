@@ -2,13 +2,13 @@
 
 ## Development Environment
 
-[Poetry](https://python-poetry.org) is used for dependency and package management. The steps for setting up the development environment:
+[PDM](https://pdm.fming.dev) is used for dependency and package management. The steps for setting up the development environment:
 
-1. Install Poetry: either [globally](https://python-poetry.org/docs/#installation), or in a Python virtual environment (using `pip install poetry`).
+1. Install PDM: either [globally](https://pdm.fming.dev/latest/#recommended-installation-method), or in a Python virtual environment (using `pip install pdm`).
 
-3. Install the project (if outside a virtual environment, Poetry will create one):
+2. Install the project (if outside a virtual environment, PDM will [create one](https://pdm.fming.dev/latest/usage/venv/#virtualenv-auto-creation)):
 
-        $ poetry install
+        $ pdm install -d
 
 
 ### Code Validation
@@ -29,7 +29,7 @@ $ pyenv install 3.9.12
 $ pyenv install 3.10.4
 $ pyenv local 3.8.13 3.9.12 3.10.4
 ```
-This is not needed for the CI, which runs one one Python version (image) at a time.
+This is not needed for the CI, which runs one Python version (image) at a time.
 
 #### Manual Validation
 
@@ -60,19 +60,19 @@ The indicated options add extra details to the report:
 The project documentation can be served locally by running:
 
 ```shell
-$ python -m mkdocs serve
+$ mkdocs serve
 ```
 
 To build the static documentation site, run:
 
 ```shell
-$ python -m mkdocs build
+$ mkdocs build
 ```
 
 This will create the HTML documentation in the `site` directory.
 
-The online documentation is built and hosted on ReadTheDocs, and configured in the `.readthedocs.yaml` file. The requirements file used for ReadTheDocs builds is located at `docs/requirements.txt`; to update it using Poetry run the following command:
+The online documentation is built and hosted on ReadTheDocs, and configured in the `.readthedocs.yaml` file. The requirements file used for ReadTheDocs builds is located at `docs/requirements.txt`; to update it using PDM run the following command:
 
 ```shell
-$ poetry export -o docs/requirements.txt --with=docs --without-hashes --without-urls
+$ pdm export -o docs/requirements.txt -dG docs --without-hashes
 ```
