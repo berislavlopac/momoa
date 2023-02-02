@@ -137,3 +137,7 @@ assert result.gender == "male"
 assert not result.deceased
 assert result.birthday is UNDEFINED
 ```
+
+## Compatibility
+
+For validating schemas Momoa depends on [Statham](https://statham-schema.readthedocs.io), which [supports](https://statham-schema.readthedocs.io/en/latest/compatibility.html) the [JSON Schema Draft 6 specification](https://json-schema.org/specification-links.html#draft-6).

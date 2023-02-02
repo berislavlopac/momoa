@@ -27,3 +27,7 @@ person.birthday = datetime(1969, 11, 23)
 assert person.age == 53
 assert person.birthday == datetime(1969, 11, 23)
 ```
+
+## Compatibility
+
+For validating schemas Momoa depends on [Statham](https://statham-schema.readthedocs.io), which [supports](https://statham-schema.readthedocs.io/en/latest/compatibility.html) the [JSON Schema Draft 6 specification](https://json-schema.org/specification-links.html#draft-6).
