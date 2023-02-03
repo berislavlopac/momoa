@@ -78,7 +78,7 @@ class Model:
         """Validates data and serializes it into JSON-ready format."""
         return _serialize_schema_value(self._instance)
 
-    @staticmethod
+    @staticmethod  # pragma: no mutate
     def make_model(schema_class: meta.ObjectMeta) -> Type[Model]:
         """
         Constructs a Model subclass based on the class derived from JSONSchema.
@@ -93,7 +93,7 @@ class Model:
         return cast(Type[Model], type(name, (Model,), {"_schema_class": schema_class}))
 
 
-ModelFactory = Callable[[meta.ObjectMeta], Type[Model]]
+ModelFactory = Callable[[meta.ObjectMeta], Type[Model]]  # pragma: no mutate
 
 
 def _serialize_schema_value(value: Any) -> Any:

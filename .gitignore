@@ -97,8 +97,9 @@ Pipfile.lock
 poetry.lock
 pdm.lock
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+# PEP 582; used by e.g. pyflow and PDM
 __pypackages__/
+.pdm.toml
 
 # Celery stuff
 celerybeat-schedule

@@ -20,6 +20,7 @@ blocks:
       jobs:
         - name: Collect package details and create GitHub release
           commands:
+            - python -m pdm config python.use_venv false
             - RELEASE_VERSION=$(python -m pdm show --version)
             - 'RELEASE_NOTES_FILE="release-notes/${RELEASE_VERSION}.md"'
             - 'if [ ! -f "$RELEASE_NOTES_FILE" ]; then echo "The release notes file \"${RELEASE_NOTES_FILE}\" does not exist."; exit 1; fi'
