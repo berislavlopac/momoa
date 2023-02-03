@@ -32,6 +32,7 @@ test = [
     "mutmut>=2.4.3",
     "tox>=3.28.0",
     "tox-pdm>=0.6.1",
+    "hypothesis-jsonschema>=0.22.0",
 ]
 checks = [
     "black>=22.12.0",

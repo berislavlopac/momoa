@@ -10,11 +10,10 @@ def test_data_dir():
 
 
 @pytest.fixture
-def schema_text(test_data_dir):
-    schema_path = test_data_dir / "schema.json"
-    return schema_path.read_text()
+def schema_file_path(test_data_dir):
+    return test_data_dir / "schema.json"
 
 
 @pytest.fixture
-def schema_dict(schema_text):
-    return json.loads(schema_text)
+def schema_dict(schema_file_path):
+    return json.loads(schema_file_path.read_text())

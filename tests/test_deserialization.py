@@ -120,3 +120,23 @@ def test_deserialization_is_inverse_of_serialization(schema_dict):
     deserialized = schema.deserialize(serialized)
 
     assert deserialized == instance
+
+
+def test_deserialization_creates_default_values(schema_dict):
+    schema = Schema(schema_dict)
+
+    test_data = {
+        "firstName": "Boris",
+        "lastName": "Harrison",
+        "age": 53,
+        "dogs": ["Fluffy", "Crumpet"],
+        "deceased": False,
+        "address": {
+            "street": "adipisicing do proident laborum",
+            "city": "veniam nulla ipsum adipisicing eu",
+            "state": "Excepteur esse elit",
+        },
+    }
+    deserialized = schema.deserialize(test_data)
+
+    assert deserialized.gender == "male"

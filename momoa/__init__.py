@@ -13,18 +13,20 @@ from statham.serializers.orderer import orderer
 from statham.titles import title_labeller
 
 from .exceptions import SchemaParseError
-from .model import make_model, Model
+from .model import Model, ModelFactory
 
 
 class Schema:
     """Basic class to parse the schema and prepare the model class."""
 
-    def __init__(self, schema: Dict[str, Any]):
+    def __init__(self, schema: Dict[str, Any], model_factory: ModelFactory = Model.make_model):
         """
         Constructs the Schema class instance.
 
         Arguments:
             schema: A Python dict representation of the JSONSchema specification.
+            model_factory: A callable that creates a model subclass from a JSON Schema.
+                           Can be used to customize Model creation.
         """
         self.schema_dict = schema
         self.title: str = self.schema_dict["title"]
@@ -33,16 +35,14 @@ class Schema:
         except KeyError as ex:
             raise SchemaParseError(f"Error parsing schema `{self.title}`: {ex}") from ex
         else:
-            self.models: Sequence[Type[Model]] = tuple(
-                make_model(cls) for cls in orderer(*parsed)
-            )
+            self.models: Sequence[Type[Model]] = tuple(map(model_factory, orderer(*parsed)))
 
     @classmethod
     def from_uri(cls, input_uri: str) -> Schema:
         """
         Instantiates the Schema from a URI to the schema document.
 
-        For local files use the `file://` scheme. The method also dereferences
+        For local files use the `file://` scheme. This method also dereferences
         the internal `$ref` links.
 
         Arguments:
@@ -57,6 +57,8 @@ class Schema:
     def from_file(cls, file_path: Union[Path, str]) -> Schema:
         """
         Helper to instantiate the Schema from a local file path.
+
+        Note: This method will _not_ dereference any internal `$ref` links.
 
         Arguments:
             file_path: Either a simple string path or a `pathlib.Path` object.

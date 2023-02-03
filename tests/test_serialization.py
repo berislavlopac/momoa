@@ -107,7 +107,8 @@ def test_generic_subschemas_are_serialized_correctly(test_data_dir):
     }
 
 
-def test_serialization_is_inverse_of_deserialization(schema_dict):
+def test_serialization_is_inverse_of_deserialization_if_no_undefined_defaults(schema_dict):
+    """Note: Works only if there are no undefined values for properties with a default."""
     schema = Schema(schema_dict)
 
     test_data = {
@@ -115,7 +116,7 @@ def test_serialization_is_inverse_of_deserialization(schema_dict):
         "lastName": "Harrison",
         "age": 53,
         "dogs": ["Fluffy", "Crumpet"],
-        "gender": "male",
+        "gender": "other",
         "deceased": False,
         "address": {
             "street": "adipisicing do proident laborum",

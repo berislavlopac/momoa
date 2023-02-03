@@ -36,7 +36,7 @@ This is not needed for the CI, which runs one Python version (image) at a time.
 During development, each code check can be executed independently:
 
 ```shell
-$ ruff                                           # code linting
+$ ruff .                                         # code linting
 $ mypy --install-types --non-interactive momoa/  # Python typing analysis
 $ black --check .                                # Python code formatting
 $ isort --check .                                # Import statement optimisation

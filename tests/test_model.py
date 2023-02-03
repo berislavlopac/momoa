@@ -5,18 +5,18 @@ import pytest
 from statham.schema.parser import parse
 
 from momoa.exceptions import DataValidationError
-from momoa.model import make_model, Model, UNDEFINED
+from momoa.model import Model, UNDEFINED
 
 
 @pytest.fixture
 def PersonModel(schema_dict):
     schema_class = parse(schema_dict).pop()
-    return make_model(schema_class)
+    return Model.make_model(schema_class)
 
 
 def test_make_model_creates_model_class(schema_dict):
     schema_class = parse(schema_dict).pop()
-    model = make_model(schema_class)
+    model = Model.make_model(schema_class)
 
     assert inspect.isclass(model)
     assert issubclass(model, Model)

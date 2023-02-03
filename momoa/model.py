@@ -1,6 +1,7 @@
 """Base wrapper class for building JSONSchema based models."""
+from __future__ import annotations
 
-from typing import Any, cast, Type
+from typing import Any, Callable, cast, Type
 
 from statham.schema.constants import NotPassed
 from statham.schema.elements import meta, String
@@ -77,20 +78,22 @@ class Model:
         """Validates data and serializes it into JSON-ready format."""
         return _serialize_schema_value(self._instance)
 
+    @staticmethod
+    def make_model(schema_class: meta.ObjectMeta) -> Type[Model]:
+        """
+        Constructs a Model subclass based on the class derived from JSONSchema.
 
-def make_model(schema_class: meta.ObjectMeta) -> Type[Model]:
-    """
-    Constructs a Model subclass based on the class derived from JSONSchema.
+        Attributes:
+            schema_class: Class derived from the JSONSchema.
 
-    Attributes:
-        schema_class: Class derived from the JSONSchema.
+        Returns:
+            Subclass of the Model class.
+        """
+        name = pascalcase(schema_class.__name__) + "Model"
+        return cast(Type[Model], type(name, (Model,), {"_schema_class": schema_class}))
 
-    Returns:
-        Subclass of the Model class.
-    """
-    name = pascalcase(schema_class.__name__) + "Model"
-    bases = (Model,)
-    return cast(Type[Model], type(name, bases, {"_schema_class": schema_class}))
+
+ModelFactory = Callable[[meta.ObjectMeta], Type[Model]]
 
 
 def _serialize_schema_value(value: Any) -> Any:
