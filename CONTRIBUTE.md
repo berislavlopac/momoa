@@ -29,30 +29,24 @@ $ pyenv install 3.9.12
 $ pyenv install 3.10.4
 $ pyenv local 3.8.13 3.9.12 3.10.4
 ```
-This is not needed for the CI, which runs one Python version (image) at a time.
 
 #### Manual Validation
 
-During development, each code check can be executed independently:
+There is a number of code quality checks that can be executed using PDM commands:
 
 ```shell
-$ ruff .                                         # code linting
-$ mypy --install-types --non-interactive momoa/  # Python typing analysis
-$ black --check .                                # Python code formatting
-$ isort --check .                                # Import statement optimisation
-$ pydocstyle momoa/                              # styling and completeness of docstrings  
+$ pdm run check-lint    # validates code linting using tools like ruff, black or isort
+$ pdm run check-typing  # runs static type analysis using mypy
+$ pdm run check-docs    # checks docstring content and structure
+$ pdm run checks        # runs all of the above checks together
 ```
 
-For unit tests use:
+There is a separate command for running tests:
 
 ```shell
-$ pytest --cov --spec
+$ pdm run tests
 ```
-
-The indicated options add extra details to the report:
-
-* `--cov` adds a test coverage report
-* `--spec` formats the test report as a list of spec statements
+Of course, tests can also be executed using `pytest` directly.
 
 
 ## API Documentation

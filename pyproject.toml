@@ -41,6 +41,18 @@ checks = [
     "ruff>=0.0.238",
 ]
 
+[tool.pdm.scripts]
+tests.cmd = "pytest --spec --cov"
+check-lint.shell = """
+    ruff .
+    black --check .
+    isort --check .
+"""
+check-typing.cmd = "mypy --install-types --non-interactive momoa/"
+check-docs.cmd = "pydocstyle momoa/"
+checks.composite = ["check-lint", "check-typing", "check-docs"]
+new-commits.shell = "git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-decorate"
+
 [project.urls]
 homepage = "https://momoa.readthedocs.io"
 repository = "https://github.com/berislavlopac/momoa"
