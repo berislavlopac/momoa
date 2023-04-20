@@ -19,6 +19,7 @@ class Model:
     """Base model class."""
 
     _schema_class: meta.ObjectMeta
+    _formatter: Type[StringFormat]
 
     def __init__(self, **data):
         try:
@@ -32,14 +33,14 @@ class Model:
         """Converts Python native values to JSONSchema string equivalents on the fly."""
         element = self._get_field_element(field)
         if isinstance(element, String) and not isinstance(value, str):
-            value = StringFormat(element.format).to_(value)
+            value = self._formatter(element.format).to_(value)
         return value
 
     def _unformat(self, field: str, value: str) -> Any:
         """Converts JSONSchema formatted string values to Python native on the fly."""
         element = self._get_field_element(field)
         if isinstance(element, String) and value:
-            value = StringFormat(element.format).from_(value)
+            value = self._formatter(element.format).from_(value)
         else:
             value = element(value)
         return value
@@ -79,18 +80,24 @@ class Model:
         return _serialize_schema_value(self._instance)
 
     @staticmethod  # pragma: no mutate
-    def make_model(schema_class: meta.ObjectMeta) -> Type[Model]:
+    def make_model(schema_class: meta.ObjectMeta, string_formatter=StringFormat) -> Type[Model]:
         """
         Constructs a Model subclass based on the class derived from JSONSchema.
 
-        Attributes:
+        Args:
             schema_class: Class derived from the JSONSchema.
+            string_formatter: Class used to format strings.
 
         Returns:
             Subclass of the Model class.
         """
         name = pascalcase(schema_class.__name__) + "Model"
-        return cast(Type[Model], type(name, (Model,), {"_schema_class": schema_class}))
+        return cast(
+            Type[Model],
+            type(
+                name, (Model,), {"_schema_class": schema_class, "_formatter": string_formatter}
+            ),
+        )
 
 
 ModelFactory = Callable[[meta.ObjectMeta], Type[Model]]  # pragma: no mutate

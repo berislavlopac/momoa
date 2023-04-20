@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from ipaddress import IPv4Address, IPv6Address
+from uuid import UUID
 
 import pytest
 
@@ -24,10 +25,16 @@ from momoa.format import StringFormat
         ),
         pytest.param("ipv4", "192.168.0.1", IPv4Address("192.168.0.1"), id="IPv4"),
         pytest.param("ipv6", "2001:db8::1000", IPv6Address("2001:db8::1000"), id="IPv6"),
+        pytest.param(
+            "uuid",
+            "4cbf6ab8-1785-4264-a011-ee655edbe4f5",
+            UUID("4cbf6ab8-1785-4264-a011-ee655edbe4f5"),
+            id="UUID",
+        ),
         pytest.param("unknown", "blabla", "blabla", id="unknown format"),
     ),
 )
-def test_strings_are_deserializsed_to_correct_value(format_name, value, deserialized):
+def test_strings_are_deserialised_to_correct_value(format_name, value, deserialized):
     fmt = StringFormat(format_name)
     assert fmt.from_(value) == deserialized
 
@@ -49,6 +56,12 @@ def test_strings_are_deserializsed_to_correct_value(format_name, value, deserial
             id="datetime with timezone",
         ),
         pytest.param("unknown", "blabla", "blabla", id="unknown format"),
+        pytest.param(
+            "uuid",
+            "4cbf6ab8-1785-4264-a011-ee655edbe4f5",
+            UUID("4cbf6ab8-1785-4264-a011-ee655edbe4f5"),
+            id="UUID",
+        ),
     ),
 )
 def test_values_are_serialized_to_correct_format(format_name, serialized, value):
