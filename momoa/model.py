@@ -1,12 +1,13 @@
 """Base wrapper class for building JSONSchema based models."""
+
 from __future__ import annotations
 
 from typing import Any, Callable, cast, Type
 
+from humps import pascalize
 from statham.schema.constants import NotPassed
 from statham.schema.elements import meta, String
 from statham.schema.exceptions import ValidationError
-from stringcase import pascalcase
 
 from .exceptions import DataValidationError
 from .format import StringFormat
@@ -91,7 +92,7 @@ class Model:
         Returns:
             Subclass of the Model class.
         """
-        name = pascalcase(schema_class.__name__) + "Model"
+        name = pascalize(schema_class.__name__) + "Model"
         return cast(
             Type[Model],
             type(

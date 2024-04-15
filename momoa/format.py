@@ -1,4 +1,5 @@
 """Helper utilities for formatting serialized data."""
+
 from datetime import date, datetime
 from ipaddress import ip_address
 from typing import Any, Callable, cast, Mapping

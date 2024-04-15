@@ -1,4 +1,5 @@
 """Basic class to parse a schema and prepare the model class."""
+
 from __future__ import annotations
 
 import json

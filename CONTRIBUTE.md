@@ -65,8 +65,4 @@ $ mkdocs build
 
 This will create the HTML documentation in the `site` directory.
 
-The online documentation is built and hosted on ReadTheDocs, and configured in the `.readthedocs.yaml` file. The requirements file used for ReadTheDocs builds is located at `docs/requirements.txt`; to update it using PDM run the following command:
-
-```shell
-$ pdm export -o docs/requirements.txt -dG docs --without-hashes
-```
+The online documentation is built and hosted on ReadTheDocs, and configured in the `.readthedocs.yaml` file.
