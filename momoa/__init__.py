@@ -74,7 +74,7 @@ class Schema:
         """
         Retrieves the top model class of the schema.
 
-        Returns:
+        Returns
             Model subclass.
         """
         return self.models[-1]
