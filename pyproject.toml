@@ -26,7 +26,7 @@ dependencies = [
 
 [project.optional-dependencies]
 docs = [
-    "mkapi>=1.0.14",
+    "mkapi>=2.1.0",
     "mkdocs>=1.5.3",
     "mkdocs-material>=9.5.17",
     "jinja2>=3.1.3",
