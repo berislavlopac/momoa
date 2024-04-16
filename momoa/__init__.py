@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from functools import cached_property
 from pathlib import Path
-from typing import Any, Dict, Mapping, Sequence, Type, Union
+from typing import Any
 
 from json_ref_dict import materialize, RefDict
 from statham.schema.parser import parse
@@ -20,7 +21,7 @@ from .model import Model, ModelFactory
 class Schema:
     """Basic class to parse the schema and prepare the model class."""
 
-    def __init__(self, schema: Dict[str, Any], model_factory: ModelFactory = Model.make_model):
+    def __init__(self, schema: dict[str, Any], model_factory: ModelFactory = Model.make_model):
         """
         Constructs the Schema class instance.
 
@@ -34,9 +35,9 @@ class Schema:
         try:
             parsed = parse(deepcopy(self.schema_dict))
         except KeyError as ex:
-            raise SchemaParseError(f"Error parsing schema `{self.title}`: {ex}") from ex
+            raise SchemaParseError(self.title, ex) from ex
         else:
-            self.models: Sequence[Type[Model]] = tuple(map(model_factory, orderer(*parsed)))
+            self.models: Sequence[type[Model]] = tuple(map(model_factory, orderer(*parsed)))
 
     @classmethod
     def from_uri(cls, input_uri: str) -> Schema:
@@ -55,7 +56,7 @@ class Schema:
         return cls(materialize(RefDict.from_uri(input_uri), context_labeller=title_labeller()))
 
     @classmethod
-    def from_file(cls, file_path: Union[Path, str]) -> Schema:
+    def from_file(cls, file_path: Path | str) -> Schema:
         """
         Helper to instantiate the Schema from a local file path.
 
@@ -70,7 +71,7 @@ class Schema:
         return cls.from_uri(Path(file_path).absolute().as_uri())
 
     @cached_property
-    def model(self) -> Type[Model]:
+    def model(self) -> type[Model]:
         """
         Retrieves the top model class of the schema.
 
@@ -79,7 +80,7 @@ class Schema:
         """
         return self.models[-1]
 
-    def deserialize(self, raw_data: Union[Mapping[str, Any], str]) -> Model:
+    def deserialize(self, raw_data: Mapping[str, Any] | str) -> Model:
         """
         Converts raw data to the Model instance, validating it in the process.
 

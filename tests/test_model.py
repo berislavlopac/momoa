@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 from statham.schema.parser import parse
 
-from momoa.exceptions import DataValidationError
+from momoa.exceptions import DataValidationError, InvalidFieldError
 from momoa.model import Model, UNDEFINED
 
 
@@ -43,7 +43,7 @@ def test_instantiation_with_incorrect_values_raises_validation_error(PersonModel
 
 
 def test_instantiation_with_incorrect_fields_raises_validation_error(PersonModel):
-    with pytest.raises(DataValidationError):
+    with pytest.raises(InvalidFieldError):
         PersonModel(firstName="Boris", lastName="Harrison", foo="bar")
 
 
@@ -64,7 +64,7 @@ def test_instantiation_with_iso_datetime(PersonModel):
 def test_invalid_attribute_raises_exception(PersonModel):
     person = PersonModel(firstName="Boris", lastName="Harrison")
     with pytest.raises(AttributeError):
-        person.foobar
+        person.foobar  # noqa: B018
 
 
 def test_unset_attribute_returns_sentinel_value(PersonModel):

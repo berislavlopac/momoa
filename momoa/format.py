@@ -1,8 +1,9 @@
 """Helper utilities for formatting serialized data."""
 
+from collections.abc import Callable, Mapping
 from datetime import date, datetime
 from ipaddress import ip_address
-from typing import Any, Callable, cast, Mapping
+from typing import Any, cast, ClassVar
 from uuid import UUID
 
 from dateutil.parser import isoparse
@@ -30,8 +31,8 @@ class StringFormat:
     implementation of that conversion.
     """
 
-    _to_mapping: FormatMapping = {"date-time": _format_date_time}
-    _from_mapping: FormatMapping = {
+    _to_mapping: ClassVar[FormatMapping] = {"date-time": _format_date_time}
+    _from_mapping: ClassVar[FormatMapping] = {
         "date-time": isoparse,
         "ipv4": ip_address,
         "ipv6": ip_address,

@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, cast, Type
+from collections.abc import Callable
+from typing import Any, cast
 
 from humps import pascalize
 from statham.schema.constants import NotPassed
 from statham.schema.elements import meta, String
 from statham.schema.exceptions import ValidationError
 
-from .exceptions import DataValidationError
+from .exceptions import DataValidationError, InvalidFieldError
 from .format import StringFormat
 
 # Sentinel for unset values.
@@ -20,7 +21,7 @@ class Model:
     """Base model class."""
 
     _schema_class: meta.ObjectMeta
-    _formatter: Type[StringFormat]
+    _formatter: type[StringFormat]
 
     def __init__(self, **data):
         try:
@@ -28,7 +29,7 @@ class Model:
                 {key: self._format(key, value) for key, value in data.items()}
             )
         except ValidationError as ex:
-            raise DataValidationError(f"{type(self).__name__} validation error: {ex}") from ex
+            raise DataValidationError(self, ex) from ex
 
     def _format(self, field: str, value: Any) -> str:
         """Converts Python native values to JSONSchema string equivalents on the fly."""
@@ -49,7 +50,8 @@ class Model:
     def __getattr__(self, item: str) -> Any:
         if item in self._schema_class.properties:  # type: ignore
             return self._unformat(item, getattr(self._instance, item))
-        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{item}'")
+        message = f"'{type(self).__name__}' object has no attribute '{item}'"
+        raise AttributeError(message)
 
     def __setattr__(self, item: str, value: Any) -> None:
         if item in self._schema_class.properties:  # type: ignore
@@ -74,14 +76,14 @@ class Model:
         try:
             return self._schema_class.properties[field].element
         except KeyError as ex:
-            raise DataValidationError(f"Invalid field '{field}'") from ex
+            raise InvalidFieldError(field) from ex
 
     def serialize(self):
         """Validates data and serializes it into JSON-ready format."""
         return _serialize_schema_value(self._instance)
 
     @staticmethod  # pragma: no mutate
-    def make_model(schema_class: meta.ObjectMeta, string_formatter=StringFormat) -> Type[Model]:
+    def make_model(schema_class: meta.ObjectMeta, string_formatter=StringFormat) -> type[Model]:
         """
         Constructs a Model subclass based on the class derived from JSONSchema.
 
@@ -94,14 +96,14 @@ class Model:
         """
         name = pascalize(schema_class.__name__) + "Model"
         return cast(
-            Type[Model],
+            type[Model],
             type(
                 name, (Model,), {"_schema_class": schema_class, "_formatter": string_formatter}
             ),
         )
 
 
-ModelFactory = Callable[[meta.ObjectMeta], Type[Model]]  # pragma: no mutate
+ModelFactory = Callable[[meta.ObjectMeta], type[Model]]  # pragma: no mutate
 
 
 def _serialize_schema_value(value: Any) -> Any:
