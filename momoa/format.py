@@ -1,5 +1,7 @@
 """Helper utilities for formatting serialized data."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Mapping
 from datetime import date, datetime
 from ipaddress import ip_address
