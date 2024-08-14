@@ -36,69 +36,6 @@ docs = [
 homepage = "https://momoa.readthedocs.io"
 repository = "https://github.com/berislavlopac/momoa"
 
-[tool.black]
-line-length = 96
-target-version = ['py38', 'py39', 'py310', 'py311']
-verbose = false
-skip-string-normalization = false
-
-[tool.isort]
-profile = "black"
-line_length = 96
-filter_files = true
-force_alphabetical_sort_within_sections = true
-
-[tool.coverage.run]
-source = [ "momoa/", ]
-omit = [ "*/tests/*", "src/tests/*", ]
-
-[tool.coverage.report]
-skip_covered = false
-show_missing = true
-fail_under = 90
-exclude_lines = [ "pragma: no cover", "@abstract",]
-
-[tool.mypy]
-mypy_path = "momoa/"
-files = ["momoa/"]
-ignore_missing_imports = true
-
-[tool.pydocstyle]
-add-ignore = "D105, D107, D212, D401"
-convention = "google"
-match-dir = "(?!tests).*"
-
-[tool.ruff]
-line-length = 96
-output-format = "grouped"
-
-[tool.ruff.lint]
-select = [  # see https://docs.astral.sh/ruff/rules/
-    "E4", "E7", "E9",  # basic pycodestyle rules
-    "W",     # pycodestyle warnings
-    "F",     # Pyflakes rules
-    "D",     # pydocstyle checks
-    "N",     # PEP8 naming conventions
-    "PLR",   # Pylint refactoring recommendations
-    "PTH",   # recommends to use pathlib instead of os.path
-    "UP",    # pyupgrade suggestions
-    "BLE",   # locates blind exception capture
-    "B",     # locates possible bugs and design problems
-    "A",     # locates shadowing of builtin names
-    "C4",    # locates possible issues with comprehensions
-    "DTZ",   # locates incorrect use of timezone information
-    "PIE",   # miscellaneous linting rules
-    "TRY",   # locates potential exception handling antipatterns
-    "PERF",  # locates potential performance issues
-    "RUF",   # various Ruff-specific linting rules
-]
-ignore = ["D105", "D107", "D211", "D203", "D212", "D401", "D407", "D413"]
-
-
-[tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "N", "PLR", "DTZ001"]
-
-
 [tool.pdm.build]
 includes = ["momoa/"]
 
@@ -158,6 +95,56 @@ help = "Extract current production requirements. Save to a file with the `-o` op
 [tool.pdm.scripts.new-commits]
 shell = "git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-decorate"
 help = "List all commits since the last tag."
+
+[tool.isort]
+profile = "black"
+line_length = 96
+filter_files = true
+force_alphabetical_sort_within_sections = true
+
+[tool.coverage.run]
+source = [ "momoa/", ]
+omit = [ "*/tests/*", "src/tests/*", ]
+
+[tool.coverage.report]
+skip_covered = false
+show_missing = true
+fail_under = 90
+exclude_lines = [ "pragma: no cover", "@abstract",]
+
+[tool.mypy]
+mypy_path = "momoa/"
+files = ["momoa/"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 96
+output-format = "grouped"
+
+[tool.ruff.lint]
+select = [  # see https://docs.astral.sh/ruff/rules/
+    "E4", "E7", "E9",  # basic pycodestyle rules
+    "W",     # pycodestyle warnings
+    "F",     # Pyflakes rules
+    "D",     # pydocstyle checks
+    "N",     # PEP8 naming conventions
+    "PLR",   # Pylint refactoring recommendations
+    "PTH",   # recommends to use pathlib instead of os.path
+    "UP",    # pyupgrade suggestions
+    "BLE",   # locates blind exception capture
+    "B",     # locates possible bugs and design problems
+    "A",     # locates shadowing of builtin names
+    "C4",    # locates possible issues with comprehensions
+    "DTZ",   # locates incorrect use of timezone information
+    "PIE",   # miscellaneous linting rules
+    "TRY",   # locates potential exception handling antipatterns
+    "PERF",  # locates potential performance issues
+    "RUF",   # various Ruff-specific linting rules
+]
+ignore = ["D105", "D107", "D203", "D212", "D401", "D407", "D413"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D", "N", "PLR", "DTZ001"]
 
 [build-system]
 requires = ["pdm-backend"]
