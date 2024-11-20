@@ -37,7 +37,6 @@ blocks:
           matrix:
             - env_var: PY_VERSION
               values:
-                - '3.9'
                 - '3.10'
                 - '3.11'
                 - '3.12'

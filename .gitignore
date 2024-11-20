@@ -177,10 +177,9 @@ docker-compose.override.yml
 
 tmp/
 
-
 # run configurations
 .run/
 /.run/
 
-# kube manifest
-helm/baked_manifest.yaml
+# various tools
+.pdm-python
