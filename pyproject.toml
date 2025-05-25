@@ -1,6 +1,6 @@
 [project]
 name = "momoa"
-version = "0.3.0"
+version = "0.3.1"
 description = "A library for definition, validation and serialisation of Python objects based on JSONSchema specifications."
 readme = "README.md"
 license = {text = "MIT"}
@@ -29,15 +29,16 @@ dependencies = [
 checks = [
     "ruff>=0.0.238",
     "mypy>=1.9.0",
-    "isort>=5.13.2",
     "deptry>=0.21.1",
+    "types-python-dateutil>=2.9.0.20250516",
+    "pydocstyle>=6.3.0",
 ]
 test = [
     "pytest>=7.2.1",
     "pytest-cov>=4.0.0",
     "pytest-spec>=3.2.0",
     "tox>=3.28.0",
-    "tox-pdm>=0.6.1",
+    "tox-uv>=1.25.0",
 ]
 docs = [
     "mkdocs-material>=9.5.45",
@@ -49,14 +50,12 @@ docs = [
 homepage = "https://momoa.readthedocs.io"
 repository = "https://github.com/berislavlopac/momoa"
 
-[tool.pdm.build]
-includes = ["momoa/"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.isort]
-profile = "black"
-line_length = 96
-filter_files = true
-force_alphabetical_sort_within_sections = true
+[tool.uv]
+default-groups = "all"
 
 [tool.coverage.run]
 source = [ "momoa/", ]
@@ -80,28 +79,76 @@ output-format = "grouped"
 [tool.ruff.lint]
 select = [  # see https://docs.astral.sh/ruff/rules/
     "E4", "E7", "E9",  # basic pycodestyle rules
-    "W",     # pycodestyle warnings
-    "F",     # Pyflakes rules
-    "D",     # pydocstyle checks
-    "N",     # PEP8 naming conventions
-    "PLR",   # Pylint refactoring recommendations
-    "PTH",   # recommends to use pathlib instead of os.path
-    "UP",    # pyupgrade suggestions
-    "BLE",   # locates blind exception capture
-    "B",     # locates possible bugs and design problems
-    "A",     # locates shadowing of builtin names
-    "C4",    # locates possible issues with comprehensions
-    "DTZ",   # locates incorrect use of timezone information
-    "PIE",   # miscellaneous linting rules
-    "TRY",   # locates potential exception handling antipatterns
-    "PERF",  # locates potential performance issues
-    "RUF",   # various Ruff-specific linting rules
+    "F",        # Pyflakes rules
+    "W",        # pycodestyle warnings
+    "C90",      # McCabe complexity
+    "N",        # PEP8 naming conventions
+    "I",        # import statements linting and formatting
+    "PLR",      # Pylint refactoring recommendations
+    "PTH",      # recommends to use pathlib instead of os.path
+    "UP",       # pyupgrade suggestions
+    "BLE",      # locates blind exception capture
+    "B",        # locates possible bugs and design problems
+    "A",        # locates shadowing of builtin names
+    "C4",       # locates possible issues with comprehensions
+    "DTZ",      # locates incorrect use of timezone information
+    "PIE",      # miscellaneous linting rules
+    "TRY",      # locates potential exception handling antipatterns
+    "PERF",     # locates potential performance issues
+    "RUF",      # various Ruff-specific linting rules
+    "S",        # various insecure code, with bandit
+    "ERA",      # eradicate: commented-out code
 ]
-ignore = ["D105", "D107", "D203", "D212", "D401", "D407", "D413"]
+external = [
+    "F841",     # vulture uses this code for ignoring unused names
+]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "N", "PLR", "DTZ001"]
+"__init__.py" = [
+    "F401",     # allow unused imports
+    "F403",     # allow `import *`
+]
+"tests/*" = [
+    "PLR0913",  # unlimited function arguments
+    "S101",     # allow asserts
+    "S105",     # allow harcoded passwords
+    "N802",     # allow variable case in test names
+    "PLR2004",  # allow magic values in comparisons
+    "S311",     # allow random generator
+    "DTZ001",   # allow naive datetimes
+]
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+[tool.ruff.lint.isort]
+# see https://docs.astral.sh/ruff/settings/#lintisort
+known-first-party = ["momoa"]
+force-sort-within-sections = true
+
+[tool.pydocstyle]
+add-ignore = "D105, D107, D212, D401"
+convention = "google"
+match-dir = "(?!tests).*"
+
+[tool.tox]
+isolated_build = true
+envlist = ["checks", "py310", "py311", "py312"]
+
+[tool.tox.env_run_base]
+runner = "uv-venv-lock-runner"
+skip_install = true
+groups = ["test", "checks"]
+commands = [
+    ["pytest", "--cov", "--spec", "--junitxml=test-reports{/}{envname}-junit.xml"],
+    ["coverage", "xml", "-o", "test-reports{/}{envname}-coverage.xml"],
+    ["mypy", "--install-types", "--non-interactive"],
+]
+
+[tool.tox.env.checks]
+runner = "uv-venv-lock-runner"
+skip-install = true
+groups = ["checks"]
+commands = [
+    ["deptry", "."],
+    ["ruff", "format", "--check", "."],
+    ["ruff", "check", "."],
+    ["pydocstyle", "momoa/"],
+]

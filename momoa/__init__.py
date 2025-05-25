@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from functools import cached_property
+import json
 from pathlib import Path
 from typing import Any
 
-from json_ref_dict import materialize, RefDict
+from json_ref_dict import RefDict, materialize
 from statham.schema.parser import parse
 from statham.serializers.orderer import orderer
 from statham.titles import title_labeller
