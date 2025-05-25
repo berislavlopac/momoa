@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from datetime import date, datetime
 from ipaddress import ip_address
-from typing import Any, cast, ClassVar
+from typing import Any, ClassVar, cast
 from uuid import UUID
 
 from dateutil.parser import isoparse

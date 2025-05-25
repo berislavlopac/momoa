@@ -2,13 +2,9 @@
 
 ## Development Environment
 
-[PDM](https://pdm.fming.dev) is used for dependency and package management. The steps for setting up the development environment:
+[uv](https://docs.astral.sh/uv/) is used for dependency and package management.
 
-1. Install PDM: either [globally](https://pdm.fming.dev/latest/#recommended-installation-method), or in a Python virtual environment (using `pip install pdm`).
-
-2. Install the project (if outside a virtual environment, PDM will [create one](https://pdm.fming.dev/latest/usage/venv/#virtualenv-auto-creation)):
-
-        $ pdm install -d
+A collection of helpful commands for local development can be 
 
 
 ### Code Validation

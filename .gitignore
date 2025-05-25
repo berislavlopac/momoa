@@ -184,5 +184,8 @@ tmp/
 # various tools
 .pdm-python
 
+.mise.toml
+
 # AI tools
 CLAUDE.md
+.pdm-build/

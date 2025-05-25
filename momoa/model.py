@@ -7,7 +7,7 @@ from typing import Any, cast
 
 from humps import pascalize
 from statham.schema.constants import NotPassed
-from statham.schema.elements import meta, String
+from statham.schema.elements import String, meta
 from statham.schema.exceptions import ValidationError
 
 from .exceptions import DataValidationError, InvalidFieldError

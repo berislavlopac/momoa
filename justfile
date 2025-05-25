@@ -3,32 +3,37 @@ help:
     @just --list --unsorted
 
 # Run unit tests and coverage.
-tests:
-    pytest --spec --cov
+test:
+    uv run pytest --spec
 
 # Run unit tests without additional options.
-tests-quick:
-    pytest
+test-cov:
+    uv run pytest --spec --cov
 
 # Run linting and formating checks.
-check-lint:
-    ruff format --check .
-    isort --check .
-    ruff check .
-    deptry .
+lint:
+    uv run deptry .
+    uv run ruff format --check .
+    uv run ruff check .
+    uv run pydocstyle momoa/
 
 # Run static typing analysis.
-check-typing:
-    mypy --install-types --non-interactive
+type:
+    uv run mypy --install-types --non-interactive
+
+# Run security checks.
+analyze:
+    uvx vulture --min-confidence 100 momoa/
+    uvx radon mi --show --multi --min B momoa/
 
 # Run all checks.
-checks: check-lint check-typing
+check: lint analyze type
 
 # Reformat the code using isort and ruff.
 [confirm]
 reformat:
-    isort .
-    ruff format .
+    uv run ruff format .
+    uv run ruff check --select I --fix .
 
 # Extract current production requirements. Save to a file by appending `> requirements.txt`.
 reqs:
