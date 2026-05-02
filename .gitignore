@@ -183,3 +183,6 @@ tmp/
 
 # various tools
 .pdm-python
+
+# AI tools
+CLAUDE.md
