@@ -11,20 +11,19 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: File Formats :: JSON :: JSON Schema"
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "statham-schema>=0.13.5",
     "python-dateutil>=2.8.2",
     "pyhumps>=3.8.0",
     "json-ref-dict>=0.7.2",
-    "legacy-cgi>=2.6.4",
+    "legacy-cgi>=2.6.4; python_version >= '3.13'",
     "pydantic>=2.0",
     "datamodel-code-generator>=0.25.0",
 ]
@@ -60,6 +59,13 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 default-groups = "all"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # json_ref_dict imports the stdlib cgi module which is deprecated in 3.11/3.12
+    # and removed in 3.13 (where legacy-cgi provides it). Not our code to fix.
+    "ignore:'cgi' is deprecated:DeprecationWarning",
+]
 
 [tool.coverage.run]
 source = [ "momoa/", ]
@@ -134,7 +140,7 @@ match-dir = "(?!tests).*"
 
 [tool.tox]
 isolated_build = true
-envlist = ["checks", "py310", "py311", "py312"]
+envlist = ["checks", "py311", "py312", "py313", "py314"]
 
 [tool.tox.env_run_base]
 runner = "uv-venv-lock-runner"

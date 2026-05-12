@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from ipaddress import IPv4Address, IPv6Address
 from uuid import UUID
 
@@ -20,7 +20,7 @@ from momoa.format import StringFormat
         pytest.param(
             "date-time",
             "2002-05-22T11:45:00Z",
-            datetime(2002, 5, 22, 11, 45, tzinfo=timezone.utc),
+            datetime(2002, 5, 22, 11, 45, tzinfo=UTC),
             id="datetime with timezone",
         ),
         pytest.param("ipv4", "192.168.0.1", IPv4Address("192.168.0.1"), id="IPv4"),
@@ -52,7 +52,7 @@ def test_strings_are_deserialised_to_correct_value(format_name, value, deseriali
         pytest.param(
             "date-time",
             "2002-05-22T11:45:00+00:00",
-            datetime(2002, 5, 22, 11, 45, tzinfo=timezone.utc),
+            datetime(2002, 5, 22, 11, 45, tzinfo=UTC),
             id="datetime with timezone",
         ),
         pytest.param("unknown", "blabla", "blabla", id="unknown format"),

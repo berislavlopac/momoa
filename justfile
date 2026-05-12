@@ -29,6 +29,10 @@ analyze:
 # Run all checks.
 check: lint analyze type
 
+# Run tests across all supported Python versions via tox.
+test-all:
+    uv run tox
+
 # Reformat the code using isort and ruff.
 [confirm]
 reformat:
