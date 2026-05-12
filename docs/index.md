@@ -42,7 +42,7 @@ schema = Schema(schema_dict)
 ## Engine Selection
 
 Momoa compiles schemas through a pluggable engine. The default is `StathamEngine`,
-which produces `momoa.model.Model` subclasses and supports JSON Schema Draft 6.
+which produces `StathamModel` subclasses and supports JSON Schema Draft 6.
 
 To use Pydantic v2 `BaseModel` subclasses (with broader draft support), pass
 `engine=` to any of the constructors:
@@ -65,32 +65,33 @@ variable (`statham` or `pydantic`) to switch without changing code.
 
 An instantiated Schema will contain a tuple of model classes based on the schemas in the specification document. The main model will also be available separately.
 
+Model classes are constructed dynamically when the Schema is instantiated. An instance validates values on assignment and converts them to JSON Schema compliant types internally.
+
+### StathamEngine
+
 ```python
 >>> from momoa import Schema
 >>> schema = Schema.from_uri("file:///path/to/schema.json")
 >>> schema.models
-(<class 'momoa.model.AddressModel'>, <class 'momoa.model.PersonModel'>)
+(<class 'momoa.engines.statham.AddressModel'>, <class 'momoa.engines.statham.PersonModel'>)
 >>> schema.model
-<class 'momoa.model.PersonModel'>
->>>
+<class 'momoa.engines.statham.PersonModel'>
 ```
-
-The model classes are constructed dynamically when the Schema is instantiated. An instance of a model subclass is a Python object which automatically validates values and converts them to JSON Schema compliant types internally.
 
 ```python
 from datetime import datetime
 from momoa import Schema
-from momoa.model import UNDEFINED
+from momoa.engines.statham import UNDEFINED
 
 schema = Schema.from_uri("file://path/to/schema.json")
 PersonModel = schema.model
 
-birthday = datetime(1969, 11, 23)
-person = PersonModel(firstName="Boris", lastName="Harrison", birthday=birthday)
+person = PersonModel(firstName="Boris", lastName="Harrison")
 
+# Unset optional fields return UNDEFINED
 assert person.age is UNDEFINED
-assert person.birthday is UNDEFINED
 
+# Fields can be set after instantiation
 person.age = 53
 person.birthday = datetime(1969, 11, 23)
 
@@ -98,13 +99,55 @@ assert person.age == 53
 assert person.birthday == datetime(1969, 11, 23)
 ```
 
+### PydanticEngine
+
+```python
+from momoa import Schema
+from momoa.engines.pydantic import PydanticEngine
+
+schema = Schema.from_uri("file://path/to/schema.json", engine=PydanticEngine())
+PersonModel = schema.model  # a pydantic.BaseModel subclass
+
+person = PersonModel(firstName="Boris", lastName="Harrison", age=53)
+
+# Unset optional fields return None
+assert person.birthday is None
+
+# Pydantic's native API is also available
+assert person.model_dump(exclude_unset=True) == {
+    "firstName": "Boris",
+    "lastName": "Harrison",
+    "age": 53,
+}
+```
+
 ### Serialization and Deserialization
 
-A model instance can be serialised into a JSON-compatible Python dict:
+All engines expose a consistent `.serialize()` method on instances that returns a JSON-compatible dict with unset fields omitted, and `schema.deserialize()` to load data into a model instance.
+
+```python
+from momoa import Schema
+
+schema = Schema.from_uri("file://path/to/schema.json")
+
+# Deserialize from a dict or JSON string
+result = schema.deserialize({"firstName": "Boris", "lastName": "Harrison", "age": 53})
+
+assert result.firstName == "Boris"
+assert result.age == 53
+
+# Serialize back — only fields that were provided are included
+serialized = result.serialize()
+assert serialized["firstName"] == "Boris"
+assert "birthday" not in serialized
+```
+
+The StathamEngine additionally converts between Python-native types and JSON Schema formats (e.g. `datetime` ↔ ISO 8601 strings):
 
 ```python
 from datetime import datetime
 from momoa import Schema
+from momoa.engines.statham import UNDEFINED
 
 schema = Schema.from_uri("file://path/to/schema.json")
 
@@ -126,38 +169,6 @@ assert result == {
     "deceased": False,
     "birthday": "1969-11-23",
 }
-```
-
-Conversely, data can be deserialized from a JSON-formatted string or a Python dict directly into a Model instance:
-
-```python
-from momoa import Schema
-from momoa.model import UNDEFINED
-
-test_data = {
-    "firstName": "Boris",
-    "lastName": "Harrison",
-    "age": 53,
-    "dogs": ["Fluffy", "Crumpet"],
-    "gender": "male",
-    "deceased": False,
-    "address": {
-        "street": "adipisicing do proident laborum",
-        "city": "veniam nulla ipsum adipisicing eu",
-        "state": "Excepteur esse elit",
-    },
-}
-
-schema = Schema.from_uri("file://path/to/schema.json")
-result = schema.deserialize(test_data)
-
-assert type(result).__name__ == "PersonModel"
-assert isinstance(result, schema.model)
-assert result.firstName == "Boris"
-assert result.lastName == "Harrison"
-assert result.gender == "male"
-assert not result.deceased
-assert result.birthday is UNDEFINED
 ```
 
 ## Compatibility

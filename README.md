@@ -7,25 +7,51 @@ A library for definition, validation and serialisation of models based on JSON S
 
 ## Basic Usage
 
+### StathamEngine (default)
+
 ```python
 from datetime import datetime
 from momoa import Schema
-from momoa.model import UNDEFINED
+from momoa.engines.statham import UNDEFINED
 
 schema = Schema.from_uri("file://path/to/schema.json")
 PersonModel = schema.model
 
-birthday = datetime(1969, 11, 23)
-person = PersonModel(firstName="Boris", lastName="Harrison", birthday=birthday)
+person = PersonModel(firstName="Boris", lastName="Harrison")
 
+# Unset optional fields return UNDEFINED
 assert person.age is UNDEFINED
-assert person.birthday is UNDEFINED
 
+# Fields can be set after instantiation
 person.age = 53
 person.birthday = datetime(1969, 11, 23)
 
 assert person.age == 53
-assert person.birthday == datetime(1969, 11, 23)
+assert person.serialize()["birthday"] == "1969-11-23"
+```
+
+### PydanticEngine
+
+```python
+from momoa import Schema
+from momoa.engines.pydantic import PydanticEngine
+
+schema = Schema.from_uri("file://path/to/schema.json", engine=PydanticEngine())
+PersonModel = schema.model  # a pydantic.BaseModel subclass
+
+person = PersonModel(firstName="Boris", lastName="Harrison", age=53)
+
+# Unset optional fields return None
+assert person.birthday is None
+
+# Serialize omits unset fields
+serialized = person.serialize()
+assert serialized["firstName"] == "Boris"
+assert "birthday" not in serialized
+
+# Pydantic's native API is also available
+person.model_dump(exclude_unset=True)
+PersonModel.model_validate({"firstName": "Alice", "lastName": "Smith"})
 ```
 
 ## Engine Selection

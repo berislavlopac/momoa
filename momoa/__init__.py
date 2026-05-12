@@ -11,7 +11,6 @@ from json_ref_dict import RefDict, materialize
 
 from momoa.engines import EngineResult, ModelEngine, resolve_engine
 from momoa.exceptions import SchemaError, UnknownEngineError
-from momoa.model import Model, ModelFactory
 
 _VALID_ENGINES = {"statham", "pydantic"}
 _env_engine = os.environ.get("MOMOA_DEFAULT_ENGINE")
@@ -27,7 +26,6 @@ class Schema:
         schema: dict[str, Any],
         *,
         engine: ModelEngine | None = None,
-        model_factory: ModelFactory = Model.make_model,
     ):
         """
         Constructs the Schema class instance.
@@ -36,28 +34,23 @@ class Schema:
             schema: A Python dict representation of the JSONSchema specification.
             engine: A ModelEngine instance to compile the schema. If None, uses the
                     engine specified by MOMOA_DEFAULT_ENGINE env var, or StathamEngine.
-            model_factory: Passed to StathamEngine when no engine is specified.
-                           Has no effect when an explicit engine is provided.
         """
         self.schema_dict = schema
         self.title: str = self.schema_dict.get("title", "")
 
-        resolved_engine = self._resolve_engine(engine, model_factory)
+        resolved_engine = self._resolve_engine(engine)
         result: EngineResult = resolved_engine.compile(schema)
         self.models: Sequence[type] = result.models
 
     @staticmethod
-    def _resolve_engine(
-        engine: ModelEngine | None,
-        model_factory: ModelFactory,
-    ) -> ModelEngine:
+    def _resolve_engine(engine: ModelEngine | None) -> ModelEngine:
         if engine is not None:
             return engine
         if _env_engine:
             return resolve_engine(_env_engine)
         from momoa.engines.statham import StathamEngine
 
-        return StathamEngine(model_factory=model_factory)
+        return StathamEngine()
 
     @classmethod
     def from_uri(cls, input_uri: str, engine: ModelEngine | None = None) -> "Schema":
@@ -74,7 +67,7 @@ class Schema:
         Returns:
             Schema instance.
         """
-        resolved = cls._resolve_engine(engine, Model.make_model)
+        resolved = cls._resolve_engine(engine)
         labeller = resolved.context_labeller()
         return cls(
             materialize(RefDict.from_uri(input_uri), context_labeller=labeller),

@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 from momoa.exceptions import SchemaError, UnknownEngineError
 
@@ -19,17 +19,23 @@ class EngineResult:
         return self.models[-1]
 
 
+@runtime_checkable
+class Serializable(Protocol):
+    """Anything that can serialize itself to a JSON-compatible dict."""
+
+    def serialize(self) -> dict[str, Any]:
+        """Return a JSON-compatible dict representation of this instance."""
+
+
 class ModelEngine(Protocol):
     """Compiles a normalised schema spec into model classes."""
 
     @property
     def output_format(self) -> str:
         """Identifier: 'statham', 'pydantic', 'dataclass', etc."""
-        ...
 
     def compile(self, spec: dict[str, Any], *, root_name: str | None = None) -> EngineResult:
         """Returns models built from the spec. Pure: same input -> equivalent output."""
-        ...
 
     def context_labeller(self) -> Callable[[str], tuple[str, Any]] | None:
         """Returns a context_labeller for json_ref_dict.materialize, or None.
@@ -38,7 +44,6 @@ class ModelEngine(Protocol):
         to derive names for anonymous nested objects) return a callable here.
         Engines that work from plain schema dicts return None.
         """
-        ...
 
 
 def _get_registered_engines() -> dict[str, "ModelEngine"]:

@@ -163,6 +163,9 @@ commands = [
     ["pydocstyle", "momoa/"],
 ]
 
+[tool.deptry]
+package_module_name_map = { "legacy-cgi" = "cgi" }
+
 [tool.deptry.per_rule_ignores]
 DEP002 = [
     "legacy-cgi",
