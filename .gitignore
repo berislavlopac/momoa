@@ -101,6 +101,9 @@ pdm.lock
 __pypackages__/
 .pdm.toml
 
+# PDM specific
+.pdm-build/
+
 # Celery stuff
 celerybeat-schedule
 celerybeat.pid
@@ -188,4 +191,4 @@ tmp/
 
 # AI tools
 CLAUDE.md
-.pdm-build/
+.claude/

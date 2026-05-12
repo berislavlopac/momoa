@@ -12,6 +12,20 @@ class SchemaParseError(SchemaError):
         super().__init__(f"Error parsing schema `{schema_name}`: {error}")
 
 
+class SchemaCompileError(SchemaError):
+    """Error while compiling a JSON Schema into model classes."""
+
+    def __init__(self, schema_name: str, reason: str):
+        super().__init__(f"Failed to compile schema `{schema_name}`: {reason}")
+
+
+class UnknownEngineError(SchemaError):
+    """Error when an unknown engine name is requested."""
+
+    def __init__(self, name: str, valid: str):
+        super().__init__(f"Unknown engine {name!r}. Valid engines: {valid}")
+
+
 class DataValidationError(SchemaError):
     """Error on validation of data."""
 

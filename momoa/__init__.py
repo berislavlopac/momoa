@@ -1,46 +1,66 @@
 """Basic class to parse a schema and prepare the model class."""
 
-from __future__ import annotations
-
 from collections.abc import Mapping, Sequence
-from copy import deepcopy
 from functools import cached_property
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 from json_ref_dict import RefDict, materialize
-from statham.schema.parser import parse
-from statham.serializers.orderer import orderer
-from statham.titles import title_labeller
 
-from .exceptions import SchemaParseError
-from .model import Model, ModelFactory
+from momoa.engines import EngineResult, ModelEngine, resolve_engine
+from momoa.exceptions import SchemaError, UnknownEngineError
+from momoa.model import Model, ModelFactory
+
+_VALID_ENGINES = {"statham", "pydantic"}
+_env_engine = os.environ.get("MOMOA_DEFAULT_ENGINE")
+if _env_engine and _env_engine not in _VALID_ENGINES:
+    raise UnknownEngineError(_env_engine, ", ".join(sorted(_VALID_ENGINES)))
 
 
 class Schema:
     """Basic class to parse the schema and prepare the model class."""
 
-    def __init__(self, schema: dict[str, Any], model_factory: ModelFactory = Model.make_model):
+    def __init__(
+        self,
+        schema: dict[str, Any],
+        *,
+        engine: ModelEngine | None = None,
+        model_factory: ModelFactory = Model.make_model,
+    ):
         """
         Constructs the Schema class instance.
 
         Arguments:
             schema: A Python dict representation of the JSONSchema specification.
-            model_factory: A callable that creates a model subclass from a JSON Schema.
-                           Can be used to customize Model creation.
+            engine: A ModelEngine instance to compile the schema. If None, uses the
+                    engine specified by MOMOA_DEFAULT_ENGINE env var, or StathamEngine.
+            model_factory: Passed to StathamEngine when no engine is specified.
+                           Has no effect when an explicit engine is provided.
         """
         self.schema_dict = schema
-        self.title: str = self.schema_dict["title"]
-        try:
-            parsed = parse(deepcopy(self.schema_dict))
-        except KeyError as ex:
-            raise SchemaParseError(self.title, ex) from ex
-        else:
-            self.models: Sequence[type[Model]] = tuple(map(model_factory, orderer(*parsed)))
+        self.title: str = self.schema_dict.get("title", "")
+
+        resolved_engine = self._resolve_engine(engine, model_factory)
+        result: EngineResult = resolved_engine.compile(schema)
+        self.models: Sequence[type] = result.models
+
+    @staticmethod
+    def _resolve_engine(
+        engine: ModelEngine | None,
+        model_factory: ModelFactory,
+    ) -> ModelEngine:
+        if engine is not None:
+            return engine
+        if _env_engine:
+            return resolve_engine(_env_engine)
+        from momoa.engines.statham import StathamEngine
+
+        return StathamEngine(model_factory=model_factory)
 
     @classmethod
-    def from_uri(cls, input_uri: str) -> Schema:
+    def from_uri(cls, input_uri: str, engine: ModelEngine | None = None) -> "Schema":
         """
         Instantiates the Schema from a URI to the schema document.
 
@@ -49,14 +69,20 @@ class Schema:
 
         Arguments:
             input_uri: String representation of the URI to the schema.
+            engine: Optional ModelEngine to use for compilation.
 
         Returns:
             Schema instance.
         """
-        return cls(materialize(RefDict.from_uri(input_uri), context_labeller=title_labeller()))
+        resolved = cls._resolve_engine(engine, Model.make_model)
+        labeller = resolved.context_labeller()
+        return cls(
+            materialize(RefDict.from_uri(input_uri), context_labeller=labeller),
+            engine=engine,
+        )
 
     @classmethod
-    def from_file(cls, file_path: Path | str) -> Schema:
+    def from_file(cls, file_path: Path | str, engine: ModelEngine | None = None) -> "Schema":
         """
         Helper to instantiate the Schema from a local file path.
 
@@ -64,14 +90,15 @@ class Schema:
 
         Arguments:
             file_path: Either a simple string path or a `pathlib.Path` object.
+            engine: Optional ModelEngine to use for compilation.
 
         Returns:
             Schema instance.
         """
-        return cls.from_uri(Path(file_path).absolute().as_uri())
+        return cls.from_uri(Path(file_path).absolute().as_uri(), engine=engine)
 
     @cached_property
-    def model(self) -> type[Model]:
+    def model(self) -> type:
         """
         Retrieves the top model class of the schema.
 
@@ -80,7 +107,7 @@ class Schema:
         """
         return self.models[-1]
 
-    def deserialize(self, raw_data: Mapping[str, Any] | str) -> Model:
+    def deserialize(self, raw_data: Mapping[str, Any] | str) -> Any:
         """
         Converts raw data to the Model instance, validating it in the process.
 

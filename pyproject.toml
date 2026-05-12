@@ -25,6 +25,8 @@ dependencies = [
     "pyhumps>=3.8.0",
     "json-ref-dict>=0.7.2",
     "legacy-cgi>=2.6.4",
+    "pydantic>=2.0",
+    "datamodel-code-generator>=0.25.0",
 ]
 
 [dependency-groups]
