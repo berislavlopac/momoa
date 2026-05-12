@@ -10,10 +10,10 @@ If an output file path is given, the notes are written there; otherwise they
 are printed to stdout.
 """
 
+from pathlib import Path
 import re
 import sys
 import tomllib
-from pathlib import Path
 
 
 def main() -> None:

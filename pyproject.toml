@@ -161,6 +161,8 @@ commands = [
     ["ruff", "format", "--check", "."],
     ["ruff", "check", "."],
     ["pydocstyle", "momoa/"],
+    ["uvx", "vulture", "--min-confidence", "100", "momoa/"],
+    ["uvx", "radon", "mi", "--show", "--multi", "--min", "B", "momoa/"],
 ]
 
 [tool.deptry]

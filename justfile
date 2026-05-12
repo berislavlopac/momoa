@@ -41,7 +41,7 @@ reformat:
 
 # Extract current production requirements. Save to a file by appending `> requirements.txt`.
 reqs:
-    pdm export --prod --without-hashes
+    uv export --no-dev --no-hashes
 
 # List all commits since the last tag.
 new-commits:
