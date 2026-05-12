@@ -39,6 +39,28 @@ schema_dict = yaml.safe_load(schema_file.read_text())
 schema = Schema(schema_dict)
 ```
 
+## Engine Selection
+
+Momoa compiles schemas through a pluggable engine. The default is `StathamEngine`,
+which produces `momoa.model.Model` subclasses and supports JSON Schema Draft 6.
+
+To use Pydantic v2 `BaseModel` subclasses (with broader draft support), pass
+`engine=` to any of the constructors:
+
+```python
+from momoa import Schema
+from momoa.engines.pydantic import PydanticEngine
+
+engine = PydanticEngine()
+
+schema = Schema.from_file("/path/to/schema.json", engine=engine)
+schema = Schema.from_uri("https://path.to/schema.json", engine=engine)
+schema = Schema(schema_dict, engine=engine)
+```
+
+The active engine can also be set via the `MOMOA_DEFAULT_ENGINE` environment
+variable (`statham` or `pydantic`) to switch without changing code.
+
 ## Model Instance
 
 An instantiated Schema will contain a tuple of model classes based on the schemas in the specification document. The main model will also be available separately.
@@ -140,4 +162,9 @@ assert result.birthday is UNDEFINED
 
 ## Compatibility
 
-For validating schemas Momoa depends on [Statham](https://statham-schema.readthedocs.io), which [supports](https://statham-schema.readthedocs.io/en/latest/compatibility.html) the [JSON Schema Draft 6 specification](https://json-schema.org/specification-links.html#draft-6).
+Momoa supports two engines with different JSON Schema draft coverage:
+
+| Engine | Backend | JSON Schema drafts |
+|---|---|---|
+| `StathamEngine` (default) | [Statham](https://statham-schema.readthedocs.io) | Draft 6 |
+| `PydanticEngine` | [datamodel-code-generator](https://docs.koudai-liling.me/datamodel-code-generator/) + Pydantic v2 | Draft 4 – 2020-12 |

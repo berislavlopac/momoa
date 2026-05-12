@@ -28,6 +28,28 @@ assert person.age == 53
 assert person.birthday == datetime(1969, 11, 23)
 ```
 
+## Engine Selection
+
+Momoa compiles schemas through a pluggable engine. The default is `StathamEngine`.
+To use Pydantic v2 `BaseModel` subclasses instead, pass `engine=` explicitly:
+
+```python
+from momoa import Schema
+from momoa.engines.pydantic import PydanticEngine
+
+schema = Schema.from_file("path/to/schema.json", engine=PydanticEngine())
+person = schema.deserialize({"firstName": "Alice", "lastName": "Smith"})
+print(person.model_dump())  # standard Pydantic API also available
+```
+
+The active engine can also be set via the `MOMOA_DEFAULT_ENGINE` environment variable
+(`statham` or `pydantic`), which is useful for switching without changing code.
+
 ## Compatibility
 
-For validating schemas Momoa depends on [Statham](https://statham-schema.readthedocs.io), which [supports](https://statham-schema.readthedocs.io/en/latest/compatibility.html) the [JSON Schema Draft 6 specification](https://json-schema.org/specification-links.html#draft-6).
+Momoa supports two engines with different JSON Schema draft coverage:
+
+| Engine | Backend | JSON Schema drafts |
+|---|---|---|
+| `StathamEngine` (default) | [Statham](https://statham-schema.readthedocs.io) | Draft 6 |
+| `PydanticEngine` | [datamodel-code-generator](https://docs.koudai-liling.me/datamodel-code-generator/) + Pydantic v2 | Draft 4 – 2020-12 |
