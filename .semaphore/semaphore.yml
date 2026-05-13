@@ -16,11 +16,11 @@ blocks:
     task:
       prologue:
         commands:
-          - pip install uv tox tox-uv
+          - pip install uv
       jobs:
         - name: checks
           commands:
-            - python -m tox -e checks
+            - uvx --with tox-uv tox -e checks
   - name: Unit tests
     skip:
       when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
@@ -29,7 +29,7 @@ blocks:
     task:
       prologue:
         commands:
-          - pip install uv tox tox-uv
+          - pip install uv
           - uv python install $PY_VERSION
       jobs:
         - name: tests
@@ -42,7 +42,7 @@ blocks:
                 - '3.14'
           commands:
             - 'PY_ENV=py"${PY_VERSION//.}"'
-            - python -m tox -e $PY_ENV
+            - uvx --with tox-uv tox -e $PY_ENV
       epilogue:
         on_pass:
           commands:
