@@ -16,7 +16,6 @@ blocks:
     task:
       prologue:
         commands:
-          - sem-version python 3.11
           - pip install uv tox tox-uv
       jobs:
         - name: checks
@@ -30,8 +29,8 @@ blocks:
     task:
       prologue:
         commands:
-          - sem-version python $PY_VERSION
           - pip install uv tox tox-uv
+          - uv python install $PY_VERSION
       jobs:
         - name: tests
           matrix:
@@ -57,7 +56,6 @@ blocks:
         - name: pypi-credentials
       prologue:
         commands:
-          - sem-version python 3.11
           - pip install uv
       jobs:
         - name: Build and upload Python package
