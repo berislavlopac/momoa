@@ -8,15 +8,14 @@ global_job_config:
   prologue:
     commands:
       - checkout
+      - pip install uv
+      - export PATH="$HOME/.local/bin:$PATH"
 blocks:
   - name: Code checks
     skip:
       when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
     dependencies: []
     task:
-      prologue:
-        commands:
-          - pip install uv
       jobs:
         - name: checks
           commands:
@@ -29,7 +28,6 @@ blocks:
     task:
       prologue:
         commands:
-          - pip install uv
           - uv python install $PY_VERSION
       jobs:
         - name: tests
@@ -54,9 +52,6 @@ blocks:
     task:
       secrets:
         - name: pypi-credentials
-      prologue:
-        commands:
-          - pip install uv
       jobs:
         - name: Build and upload Python package
           commands:

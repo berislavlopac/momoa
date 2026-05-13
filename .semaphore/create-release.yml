@@ -9,6 +9,7 @@ global_job_config:
     commands:
       - checkout
       - pip install uv
+      - export PATH="$HOME/.local/bin:$PATH"
 blocks:
   - name: Create release
     run:
