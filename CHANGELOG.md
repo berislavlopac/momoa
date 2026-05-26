@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+Unreleased changes are kept as news fragments in `release-notes/` and collated
+into a dated section by `towncrier` at release time — see `just release`.
+
+<!-- towncrier release notes start -->
 
 ## [0.4.0] - 2026-05-12
 ### Added

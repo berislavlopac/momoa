@@ -1,27 +1,37 @@
-"""Extract the release notes for the current version from CHANGELOG.md.
+"""Extract the release notes for a given version from CHANGELOG.md.
 
-Reads the version from pyproject.toml and prints the corresponding section
-from CHANGELOG.md to stdout. Exits with a non-zero status if the section is
-not found.
+Prints the section for the requested version from CHANGELOG.md to stdout (or an
+output file). Exits with a non-zero status if the section is not found.
 
-Usage: python scripts/extract_changelog.py [output-file]
+Usage: python scripts/extract_changelog.py <version> [output-file]
 
-If an output file path is given, the notes are written there; otherwise they
-are printed to stdout.
+The version may also be supplied via the SEMAPHORE_GIT_TAG_NAME environment
+variable (the git tag that triggered the release pipeline), in which case the
+positional version argument may be omitted. If an output file path is given the
+notes are written there; otherwise they are printed to stdout.
 """
 
+import os
 from pathlib import Path
 import re
 import sys
-import tomllib
 
 
 def main() -> None:
+    args = sys.argv[1:]
+
+    if args:
+        version = args[0]
+        output_file = args[1] if len(args) > 1 else None
+    else:
+        version = os.environ.get("SEMAPHORE_GIT_TAG_NAME", "")
+        output_file = None
+
+    if not version:
+        print("No version given (argument or SEMAPHORE_GIT_TAG_NAME)", file=sys.stderr)
+        sys.exit(1)
+
     root = Path(__file__).parent.parent
-
-    with (root / "pyproject.toml").open("rb") as f:
-        version = tomllib.load(f)["project"]["version"]
-
     text = (root / "CHANGELOG.md").read_text()
 
     pattern = r"(?sm)^## \[" + re.escape(version) + r"\][^\n]*\n(.*?)(?=^## \[|\Z)"
@@ -32,8 +42,8 @@ def main() -> None:
 
     notes = match.group(1).strip() + "\n"
 
-    if len(sys.argv) > 1:
-        Path(sys.argv[1]).write_text(notes)
+    if output_file:
+        Path(output_file).write_text(notes)
     else:
         sys.stdout.write(notes)
 

@@ -2,6 +2,8 @@
 
 from collections.abc import Mapping, Sequence
 from functools import cached_property
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _version
 import json
 import os
 from pathlib import Path
@@ -11,6 +13,11 @@ from json_ref_dict import RefDict, materialize
 
 from momoa.engines import EngineResult, ModelEngine, resolve_engine
 from momoa.exceptions import SchemaError, UnknownEngineError
+
+try:
+    __version__ = _version("momoa")
+except PackageNotFoundError:  # pragma: no cover
+    __version__ = "0.0.0"
 
 _VALID_ENGINES = {"statham", "pydantic"}
 _env_engine = os.environ.get("MOMOA_DEFAULT_ENGINE")

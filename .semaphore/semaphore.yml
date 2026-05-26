@@ -12,8 +12,6 @@ global_job_config:
       - export PATH="$HOME/.local/bin:$PATH"
 blocks:
   - name: Code checks
-    skip:
-      when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
     dependencies: []
     task:
       jobs:
@@ -21,8 +19,6 @@ blocks:
           commands:
             - uvx --with tox-uv tox -e checks
   - name: Unit tests
-    skip:
-      when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
     dependencies:
       - Code checks
     task:
@@ -46,23 +42,28 @@ blocks:
           commands:
             - 'test-results publish "test-reports/$PY_ENV-junit.xml"'
   - name: Publish release
-    dependencies: []
+    dependencies:
+      - Code checks
+      - Unit tests
     run:
       when: "tag =~ '^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?$'"
     task:
       secrets:
         - name: pypi-credentials
+        - name: semantic-release-credentials
       jobs:
-        - name: Build and upload Python package
+        - name: Build, publish, and create GitHub release
           commands:
+            # hatch-vcs derives the version from the tag, so make sure it is present.
+            - git fetch --tags --force
             - uv build
             - uv publish --token $PYPI_PASSWORD
+            - python3 scripts/extract_changelog.py "$SEMAPHORE_GIT_TAG_NAME" /tmp/release-notes.txt
+            - 'if [[ $SEMAPHORE_GIT_TAG_NAME =~ \.[0-9]+(a|b|rc)[0-9] ]]; then PRERELEASE="--prerelease"; fi'
+            - gh release create "$SEMAPHORE_GIT_TAG_NAME" --notes-file /tmp/release-notes.txt $PRERELEASE
 after_pipeline:
   task:
     jobs:
       - name: Publish Test Results
         commands:
           - test-results gen-pipeline-report
-promotions:
-  - name: Create new release
-    pipeline_file: create-release.yml
