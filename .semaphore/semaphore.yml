@@ -56,9 +56,10 @@ blocks:
           commands:
             # hatch-vcs derives the version from the tag, so make sure it is present.
             - git fetch --tags --force
+            # Extract notes first: a missing changelog section aborts before publishing.
+            - python3 scripts/extract_changelog.py "$SEMAPHORE_GIT_TAG_NAME" /tmp/release-notes.txt
             - uv build
             - uv publish --token $PYPI_PASSWORD
-            - python3 scripts/extract_changelog.py "$SEMAPHORE_GIT_TAG_NAME" /tmp/release-notes.txt
             - 'if [[ $SEMAPHORE_GIT_TAG_NAME =~ \.[0-9]+(a|b|rc)[0-9] ]]; then PRERELEASE="--prerelease"; fi'
             - gh release create "$SEMAPHORE_GIT_TAG_NAME" --notes-file /tmp/release-notes.txt $PRERELEASE
 after_pipeline:

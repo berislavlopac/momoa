@@ -62,8 +62,9 @@ suggest-version:
 # Validate, collate the changelog, commit, tag, and push a release (see CONTRIBUTE.md).
 [confirm]
 release version: check test
+    @test -n "$(find release-notes -type f ! -name README.md)" || { echo "No news fragments in release-notes/ — use a direct tag for migration releases."; exit 1; }
     uv run towncrier build --yes --version {{version}}
     git add CHANGELOG.md release-notes
     git commit -m "Release {{version}}"
-    git tag {{version}}
+    git tag -a {{version}} -m "Release {{version}}"
     git push --follow-tags origin HEAD
