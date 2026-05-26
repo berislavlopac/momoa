@@ -59,10 +59,12 @@ blocks:
             # Extract notes first: a missing changelog section aborts before publishing.
             - python3 scripts/extract_changelog.py "$SEMAPHORE_GIT_TAG_NAME" /tmp/release-notes.txt
             - uv build
-            - uv publish --token $PYPI_PASSWORD
+            # --check-url lets a re-run skip files already on PyPI instead of failing.
+            - uv publish --token $PYPI_PASSWORD --check-url https://pypi.org/simple/momoa/
             - 'if [[ $SEMAPHORE_GIT_TAG_NAME =~ \.[0-9]+(a|b|rc)[0-9] ]]; then PRERELEASE="--prerelease"; fi'
             # --repo is required: gh cannot infer it from the Semaphore checkout's remote.
-            - gh release create "$SEMAPHORE_GIT_TAG_NAME" --repo berislavlopac/momoa --notes-file /tmp/release-notes.txt $PRERELEASE
+            # Create the release, or update it if a previous run already created it.
+            - 'if gh release view "$SEMAPHORE_GIT_TAG_NAME" --repo berislavlopac/momoa >/dev/null 2>&1; then gh release edit "$SEMAPHORE_GIT_TAG_NAME" --repo berislavlopac/momoa --notes-file /tmp/release-notes.txt $PRERELEASE; else gh release create "$SEMAPHORE_GIT_TAG_NAME" --repo berislavlopac/momoa --notes-file /tmp/release-notes.txt $PRERELEASE; fi'
 after_pipeline:
   task:
     jobs:
