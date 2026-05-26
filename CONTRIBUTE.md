@@ -48,13 +48,16 @@ $ just reformat
 ## Changelog
 
 Changes are recorded as **news fragments** rather than by editing `CHANGELOG.md`
-directly. Each change adds one file to `release-notes/`, named `<id>.<type>.md`
-(`<id>` = the PR or issue number), containing a one-line description. Valid types:
-`breaking`, `added`, `changed`, `deprecated`, `removed`, `fixed`, `security` (see
+directly. Each change adds one file to `release-notes/`, named `<id>.<type>.md`,
+containing a one-line description. `<type>` is the change category — `breaking`,
+`added`, `changed`, `deprecated`, `removed`, `fixed`, `security` (see
 `release-notes/README.md` for what each means and how it maps to a version bump).
+`<id>` defaults to a unique timestamp (no reference); pass a PR/issue number to
+render a `(#42)` reference instead.
 
 ```shell
-$ just news 42 added        # opens an editor for release-notes/42.added.md
+$ just news added           # -> release-notes/+<timestamp>.added.md (no reference)
+$ just news fixed 42        # -> release-notes/42.fixed.md (renders "(#42)")
 ```
 
 Preview how the collated changelog will look for a given version, and get a

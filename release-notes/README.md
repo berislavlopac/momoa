@@ -1,7 +1,9 @@
 # News fragments
 
-Each change gets one file in this directory, named `<id>.<type>.md`, where
-`<id>` is the PR or issue number and `<type>` is one of:
+Each change gets one file in this directory, named `<id>.<type>.md`. `<type>` is
+the change category (one of the below). `<id>` only needs to be unique: it defaults
+to a timestamp (rendered with no reference), but you can pass a PR/issue number to
+render a `(#42)` reference instead. `<type>` is one of:
 
 | Type         | Goes under in `CHANGELOG.md` | Version bump |
 |--------------|------------------------------|--------------|
@@ -20,13 +22,15 @@ changes.
 The file contains one line of prose describing the change, e.g.:
 
 ```
-release-notes/42.added.md
+release-notes/+1779835570.added.md
 -> Pluggable engine architecture with a Pydantic engine.
 ```
 
-Create one with `just news <id> <type>` (wraps `towncrier create`). Preview the
-collated result with `just changelog-draft <version>`, and get a recommended
-version from the pending fragments with `just suggest-version`. At release time,
+Create one with `just news <type>` — e.g. `just news added` (auto timestamp id) or
+`just news fixed 42` (issue reference); it wraps `towncrier create` and opens your
+editor. Preview the collated result with `just changelog-draft <version>`, and get
+a recommended version from the pending fragments with `just suggest-version`. At
+release time,
 `just release <version>` runs `towncrier build`, which folds every fragment into
 a dated `CHANGELOG.md` section and deletes the fragments. The release date is
 stamped automatically — fragments themselves carry no date.

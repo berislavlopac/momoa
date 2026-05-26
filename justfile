@@ -47,8 +47,8 @@ reqs:
 new-commits:
     git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-decorate
 
-# Add a changelog news fragment, e.g. `just news 42 added`.
-news id type:
+# Add a news fragment: `just news added` (auto id) or `just news fixed 42` (issue ref).
+news type id=('+' + datetime('%s')):
     uv run towncrier create --edit {{id}}.{{type}}.md
 
 # Preview the collated changelog for a version without writing it.
