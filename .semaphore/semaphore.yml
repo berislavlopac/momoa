@@ -61,7 +61,8 @@ blocks:
             - uv build
             - uv publish --token $PYPI_PASSWORD
             - 'if [[ $SEMAPHORE_GIT_TAG_NAME =~ \.[0-9]+(a|b|rc)[0-9] ]]; then PRERELEASE="--prerelease"; fi'
-            - gh release create "$SEMAPHORE_GIT_TAG_NAME" --notes-file /tmp/release-notes.txt $PRERELEASE
+            # --repo is required: gh cannot infer it from the Semaphore checkout's remote.
+            - gh release create "$SEMAPHORE_GIT_TAG_NAME" --repo berislavlopac/momoa --notes-file /tmp/release-notes.txt $PRERELEASE
 after_pipeline:
   task:
     jobs:
