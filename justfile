@@ -33,6 +33,11 @@ check: lint analyze type
 test-all:
     uv run tox
 
+# Serve the documentation locally with live reload.
+docs:
+    # Silence the upstream `cgi` deprecation from json-ref-dict (see pyproject filterwarnings).
+    PYTHONWARNINGS="ignore:'cgi' is deprecated:DeprecationWarning" uv run mkdocs serve --livereload
+
 # Reformat the code using isort and ruff.
 [confirm]
 reformat:
