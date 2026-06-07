@@ -1,7 +1,7 @@
 [project]
 name = "momoa"
 dynamic = ["version"]
-description = "A library for definition, validation and serialisation of Python objects based on JSONSchema specifications."
+description = "Generate typed, self-validating Python classes from JSON Schema at runtime - no code generation."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [

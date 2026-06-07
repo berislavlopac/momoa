@@ -1,7 +1,7 @@
 site_name: Momoa
 repo_url: https://github.com/berislavlopac/momoa
 site_url: https://momoa.readthedocs.io
-site_description: A library for definition, validation and serialization of models based on JSON Schema specifications.
+site_description: Generate typed, self-validating Python classes from JSON Schema at runtime - no code generation.
 site_author: Berislav Lopac <berislav@lopac.net>
 use_directory_urls: false
 theme:
