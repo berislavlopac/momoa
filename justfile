@@ -36,7 +36,7 @@ test-all:
 # Serve the documentation locally with live reload.
 docs:
     # Silence the upstream `cgi` deprecation from json-ref-dict (see pyproject filterwarnings).
-    PYTHONWARNINGS="ignore:'cgi' is deprecated:DeprecationWarning" uv run mkdocs serve --livereload
+    PYTHONWARNINGS="ignore:'cgi' is deprecated:DeprecationWarning" uv run --extra docs mkdocs serve --livereload
 
 # Reformat the code using isort and ruff.
 [confirm]

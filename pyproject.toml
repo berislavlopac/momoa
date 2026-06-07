@@ -44,8 +44,14 @@ test = [
     "tox>=3.28.0",
     "tox-uv>=1.25.0",
 ]
+
+[project.optional-dependencies]
+# An installable extra (not a dependency-group) so Read the Docs can pull it via
+# `pip install .[docs]`; uv installs it locally with `--extra docs`.
+# mkdocs-materialx is the maintained drop-in fork of mkdocs-material (theme name
+# `materialx`); upstream material has pivoted to Zensical.
 docs = [
-    "mkdocs-material>=9.5.45",
+    "mkdocs-materialx>=10.1.7",
     "mkapi>=3.0.22",
     "jinja2>=3.1.4",
 ]
@@ -185,6 +191,10 @@ package_module_name_map = { "legacy-cgi" = "cgi" }
 DEP002 = [
     "legacy-cgi",
     "towncrier",  # release-time CLI tool, never imported
+    # docs extra: build-time tooling, never imported by the package
+    "mkdocs-materialx",
+    "mkapi",
+    "jinja2",
 ]
 
 [tool.towncrier]
