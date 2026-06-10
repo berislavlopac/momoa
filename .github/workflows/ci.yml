@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["*"]
+  pull_request:
+
+# Cancel in-progress runs for the same ref when a new commit is pushed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Code checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Run lint, type and security checks
+        run: uvx --with tox-uv tox -e checks
+
+  tests:
+    name: Unit tests
+    needs: checks
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+      - name: Run tests
+        run: |
+          PY_ENV=py$(echo "${{ matrix.python-version }}" | tr -d .)
+          uvx --with tox-uv tox -e "$PY_ENV"
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-py${{ matrix.python-version }}
+          path: test-reports/
+          if-no-files-found: ignore
+
+  publish:
+    name: Build, publish, and create GitHub release
+    needs: [checks, tests]
+    # Only on a pushed tag. The release flow only ever creates PEP 440 version
+    # tags, so gating on "any tag" is equivalent to the old Semaphore regex.
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write  # create/edit the GitHub release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # hatch-vcs derives the version from the tag; fetch full history + tags.
+          fetch-depth: 0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Extract release notes
+        # A missing changelog section aborts here, before anything is published.
+        run: python3 scripts/extract_changelog.py "${GITHUB_REF_NAME}" /tmp/release-notes.txt
+      - name: Build
+        run: uv build
+      - name: Publish to PyPI
+        # --check-url lets a re-run skip files already on PyPI instead of failing.
+        run: uv publish --token "${{ secrets.PYPI_TOKEN }}" --check-url https://pypi.org/simple/momoa/
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${GITHUB_REF_NAME}" =~ \.[0-9]+(a|b|rc)[0-9] ]]; then PRERELEASE="--prerelease"; fi
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release edit "${GITHUB_REF_NAME}" --notes-file /tmp/release-notes.txt $PRERELEASE
+          else
+            gh release create "${GITHUB_REF_NAME}" --notes-file /tmp/release-notes.txt $PRERELEASE
+          fi

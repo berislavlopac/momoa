@@ -92,9 +92,10 @@ This recipe:
    `## [0.5.0] - <today>` section in `CHANGELOG.md` and delete the fragments.
 3. Commits the changelog, creates the `0.5.0` tag, and pushes the commit and tag.
 
-Pushing the tag triggers the Semaphore pipeline, which runs the checks and the full
-test matrix and — **only if they pass** — builds the package, publishes it to PyPI,
-and creates the GitHub release (notes are extracted from the new changelog section).
+Pushing the tag triggers the GitHub Actions workflow (`.github/workflows/ci.yml`),
+which runs the checks and the full test matrix and — **only if they pass** — builds
+the package, publishes it to PyPI, and creates the GitHub release (notes are extracted
+from the new changelog section).
 Ordinary pushes without a tag only run the checks and tests; they never publish.
 Prereleases (e.g. `0.5.0rc1`) are detected automatically and marked as such on GitHub.
 

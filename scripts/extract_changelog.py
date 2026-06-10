@@ -5,10 +5,10 @@ output file). Exits with a non-zero status if the section is not found.
 
 Usage: python scripts/extract_changelog.py <version> [output-file]
 
-The version may also be supplied via the SEMAPHORE_GIT_TAG_NAME environment
-variable (the git tag that triggered the release pipeline), in which case the
-positional version argument may be omitted. If an output file path is given the
-notes are written there; otherwise they are printed to stdout.
+The version may also be supplied via the GITHUB_REF_NAME environment variable
+(the git tag that triggered the release workflow), in which case the positional
+version argument may be omitted. If an output file path is given the notes are
+written there; otherwise they are printed to stdout.
 """
 
 import os
@@ -24,11 +24,11 @@ def main() -> None:
         version = args[0]
         output_file = args[1] if len(args) > 1 else None
     else:
-        version = os.environ.get("SEMAPHORE_GIT_TAG_NAME", "")
+        version = os.environ.get("GITHUB_REF_NAME", "")
         output_file = None
 
     if not version:
-        print("No version given (argument or SEMAPHORE_GIT_TAG_NAME)", file=sys.stderr)
+        print("No version given (argument or GITHUB_REF_NAME)", file=sys.stderr)
         sys.exit(1)
 
     root = Path(__file__).parent.parent
